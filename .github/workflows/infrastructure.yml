@@ -38,8 +38,9 @@ jobs:
           pip install ansible ansible[azure] requests
 
       - name: Install Azure Ansible Collection
-        run: |
-          ansible-galaxy collection install azure.azcollection
+        # run: |
+        #   ansible-galaxy collection install azure.azcollection
+        run: ansible-galaxy collection install -r Collection/requirements.yml -p Collections
     
 
       - name: Azure Login
