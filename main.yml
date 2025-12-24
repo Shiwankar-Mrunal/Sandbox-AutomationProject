@@ -16,7 +16,7 @@
   connection: local
   become: true
   gather_facts: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
+  # vars:
+  #   ansible_python_interpreter: /usr/bin/python3
   roles:
     - sandbox_environemnt
