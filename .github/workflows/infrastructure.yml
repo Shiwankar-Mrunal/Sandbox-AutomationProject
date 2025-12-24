@@ -34,7 +34,7 @@ jobs:
 
       - name: Install Azure Ansible Collection
         run: |
-          ansible-galaxy collection install azure.azcollection --force
+          pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
 
 
