@@ -55,6 +55,8 @@ jobs:
             pip install azure-mgmt-network==19.0.0
             pip install azure-mgmt-resource==20.0.0
             pip install azure-identity==1.12.0
+            pip install "ansible[azure]"
+
 
 
 
