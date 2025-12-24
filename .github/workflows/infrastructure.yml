@@ -34,7 +34,8 @@ jobs:
 
       - name: Install Azure Ansible Collection
         run: |
-          ansible-galaxy collection install -r Collection/requirements.yml -p Collections
+          ansible-galaxy collection install azure.azcollection -p Collections --force
+
 
 
       # - name: Install Ansible and Azure SDK
