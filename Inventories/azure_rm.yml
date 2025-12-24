@@ -22,8 +22,8 @@ auth_source: env
 include_vm_resource_groups:
   - M-Testing_environment
 
-hostnames:
-  - name
+# hostnames:
+#   - name
 
 keyed_groups:
   - key: location

@@ -69,16 +69,16 @@ jobs:
       #   run: ansible-galaxy collection install -r Collection/requirements.yml -p Collections
     
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: |
-            {
-              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.AZURE_SECRET }}",
-              "tenantId": "${{ secrets.AZURE_TENANT }}",
-              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-            }
+      # - name: Azure Login
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: |
+      #       {
+      #         "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+      #         "clientSecret": "${{ secrets.AZURE_SECRET }}",
+      #         "tenantId": "${{ secrets.AZURE_TENANT }}",
+      #         "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+      #       }
 
       - name: Debug Python used by Ansible
         run: |
