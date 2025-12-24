@@ -48,7 +48,7 @@ jobs:
       - name: Install Azure Python SDK dependencies
         run: |
           python -m pip install --upgrade pip
-            pip install ansible==2.14.10
+            pip install ansible
             pip install azure-mgmt-network==19.0.0
             pip install azure-mgmt-resource==20.0.0
             pip install azure-identity==1.12.0
