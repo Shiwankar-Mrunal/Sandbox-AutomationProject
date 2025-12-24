@@ -1,1 +1,4 @@
-#
+plugin: azure_rm
+include_vm_resource_groups:
+  - M-Testing_environment
+auth_source: auto
