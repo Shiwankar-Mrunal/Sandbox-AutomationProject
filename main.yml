@@ -1,6 +1,6 @@
 #
 - name: This is main file for Project "Sandbox_Environemnt
-  hosts: localhost
+  hosts: all
   connection: local
   become: true
   gather_facts: yes
