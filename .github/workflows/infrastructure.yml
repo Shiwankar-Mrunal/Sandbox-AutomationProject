@@ -40,7 +40,7 @@ jobs:
       - name: Install Azure Ansible Collection
         run: |
           ansible-galaxy collection install azure.azcollection
-          pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+    
 
       - name: Azure Login
         uses: azure/login@v1
