@@ -49,6 +49,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ansible
+          pip install azure-mgmt-network==19.0.0
           pip install -r Collections/ansible_collections/azure/azcollection/requirements.txt
 
       - name: Verify Azure collection installation
