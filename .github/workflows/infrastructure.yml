@@ -53,6 +53,7 @@ jobs:
             pip install azure-mgmt-storage
             pip install azure-mgmt-compute
             pip install azure-mgmt-dns
+            pip install azure-mgmt-web
             pip install azure-mgmt-monitor
             pip install azure-mgmt-privatedns
             pip install azure-mgmt-network==19.0.0
