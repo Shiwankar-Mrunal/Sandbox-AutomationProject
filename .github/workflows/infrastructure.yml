@@ -93,8 +93,8 @@ jobs:
       #     ansible --version
 
 
-      # - name: Run Ansible Playbook
-      #   run: |
-      #     ansible-playbook main.yml -i Inventories/azure_rm.yml
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook main.yml -i Inventories/azure_rm.yml
 
       
