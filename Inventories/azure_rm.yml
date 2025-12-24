@@ -6,12 +6,12 @@
 plugin: azure.azcollection.azure_rm
 auth_source: env
 
-resource_groups:
-  - M-Testing_environment   # CHANGE THIS
+include_vm_resource_groups:
+  - M-Testing_environment   
 
 hostnames:
   - name
 
 keyed_groups:
-  - prefix: azure
-    key: location
+  - key: location
+    prefix: azure_
