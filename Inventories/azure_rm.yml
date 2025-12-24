@@ -16,15 +16,26 @@
 #   - key: location
 #     prefix: azure_
 
-plugin: azure_rm
-auth_source: env
+# plugin: azure_rm
+# auth_source: env
+
+# include_vm_resource_groups:
+#   - M-Testing_environment
+
+
+
+# keyed_groups:
+#   - key: location
+#     prefix: azure_
+
+
+plugin: azure.azcollection.azure_rm
+
+auth_source: auto
 
 include_vm_resource_groups:
   - M-Testing_environment
 
-# hostnames:
-#   - name
-
 keyed_groups:
   - key: location
-    prefix: azure_
+    prefix: azure_location
