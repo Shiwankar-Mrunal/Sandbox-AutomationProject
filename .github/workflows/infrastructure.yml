@@ -50,6 +50,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install ansible
           pip install "azure-mgmt-network>=21.0.0,<23.0.0"
+          pip install "azure-mgmt-resource>=21.0.0,<23.0.0"
+          pip install "azure-mgmt-compute>=27.0.0,<30.0.0"
           pip install -r Collections/ansible_collections/azure/azcollection/requirements.txt
 
       - name: Verify Azure collection installation
