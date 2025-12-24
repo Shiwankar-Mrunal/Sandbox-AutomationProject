@@ -34,7 +34,7 @@ jobs:
 
       - name: Install Azure Ansible Collection
         run: |
-          ansible-galaxy collection install azure.azcollection -p Collections --force
+          ansible-galaxy collection install azure.azcollection:4.3.0 -p Collections --force
 
 
 
