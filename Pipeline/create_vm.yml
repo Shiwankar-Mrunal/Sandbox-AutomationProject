@@ -1,1 +1,39 @@
-#
+
+name : Sandbox environment automation
+
+on :
+  push: 
+    branches: 
+      - main
+
+    pull_request:
+      branches:
+        - main
+      types: [opened, synchronize, reopened]
+
+jobs:
+  provision_sandbox:
+    name: Provision Sandbox
+    runs-on: ubuntu-latest
+
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
+      AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    steps : 
+
+      - name : Checkout code
+        uses : actions/checkout@v3
+
+      - name :  set up python
+        uses : actions/setup-python@v4
+        with : 
+         python-version: '3.11'
+
+      - name: Install Ansible & Azure dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible ansible[azure] requests
