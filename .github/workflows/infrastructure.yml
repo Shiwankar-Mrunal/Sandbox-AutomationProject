@@ -1,4 +1,3 @@
-
 name : Sandbox environment automation
 
 on :
@@ -6,10 +5,10 @@ on :
     branches: 
       - main
 
-    pull_request:
-      branches:
-        - main
-      types: [opened, synchronize, reopened]
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
 
 jobs:
   provision_sandbox:
