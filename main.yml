@@ -1,9 +1,9 @@
 #
 - name: This is main file for Project "Sandbox_Environemnt
-  hosts: all
+  hosts: localhost
   connection: local
   become: true
-  gather_facts: no
+  gather_facts: yes
   vars:
    ansible_python_interpreter: /root/ansible-venv/bin/python3.10
   roles : 
