@@ -144,21 +144,24 @@
     #   loop: "{{ workspace_info.azure_loganalyticsworkspaces }}"
 
     - name: Enable diagnostic settings on VM
-      azure.azcollection.azure_rm_monitor_diagnostic_setting:
-        name: VMDiagnostics
-        resource_uri: /subscriptions/<subscription-id>/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/MyVM
-        workspace_id: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
+      azure.azcollection.azure_rm_resource:
+      api_version: '2017-05-01-preview'
+      scope: "/subscriptions/<subscription-id>/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/MyVM"
+      type: "Microsoft.Insights/diagnosticSettings"
+      name: "VMDiagnostics"
+      properties:
+        workspaceId: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
         logs:
-          - category: 'AuditLogs'
+          - category: "AuditLogs"
             enabled: true
-          - category: 'Application'
+          - category: "Application"
             enabled: true
-          - category: 'Security'
+          - category: "Security"
             enabled: true
         metrics:
-          - category: 'AllMetrics'
+          - category: "AllMetrics"
             enabled: true
-        state: present
+
 
   rescue: 
     - name : Create vm
