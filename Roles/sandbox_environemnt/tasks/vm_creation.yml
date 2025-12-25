@@ -136,12 +136,12 @@
         name: M-Workspace
       register: workspace_info
 
-    - name: Show all Log Analytics workspaces
-      debug:
-        msg: 
-          WorkspaceId: "{{ item.customer_id }}"
-          PrimaryKey: "{{ item.primary_shared_key }}"
-      loop: "{{ workspace_info.azure_loganalyticsworkspaces }}"
+    # - name: Show all Log Analytics workspaces
+    #   debug:
+    #     msg: 
+    #       WorkspaceId: "{{ item.customer_id }}"
+    #       PrimaryKey: "{{ item.primary_shared_key }}"
+    #   loop: "{{ workspace_info.azure_loganalyticsworkspaces }}"
 
     - name: Enable diagnostic settings on VM
       azure.azcollection.azure_rm_monitor_diagnostic_setting:
