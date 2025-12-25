@@ -49,7 +49,7 @@ jobs:
       - name: Notify Slack
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"Hello, World!"}' \
+          --data '{"text":"**********Welcome to ansible world *************Infrastructure Created Successfully*************THANK YOU!******"}' \
           "${{ secrets.SLACK_WEBHOOK_URL }}"
 
 
