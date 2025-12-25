@@ -48,6 +48,7 @@ jobs:
 
       - name: Notify Slack
         run: |
+          echo "Sending Slack notification..."
           curl -X POST \
             -H "Content-type: application/json" \
             --data '{"text":"CI/CD pipeline started"}' \
