@@ -65,13 +65,6 @@
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"           
-            
-    # - name: Create NSG
-    #   azure_rm_securitygroup:
-    #     resource_group: "{{ Resource_group_name }}"
-    #     name: "{{nsg}}"
-    #     location: "{{Location}}"
-
 
     - name: Create an SSH key pair
       ansible.builtin.openssh_keypair:

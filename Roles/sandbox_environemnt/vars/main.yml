@@ -8,8 +8,8 @@ address_prefixes_subnet : 10.0.1.0/24
 vm_name : Sandbox-vm 
 vm_size : Standard_B1s
 admin_username : azureuser
-Ip_name : testPublicIP
-NIC_name : M-NIC
+Ip_name : PublicIP-Sandbox
+NIC_name : NIC-sandbox
 ssh_public_key : 2HBzlIidEILJDMorAXpePkbtqB+KwoIVUZVeaejge4Y
 storage : sandboxstorage78
-nsg : sandbox_nsg
+nsg : nsg-sandbox
