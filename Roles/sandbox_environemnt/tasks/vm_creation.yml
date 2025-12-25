@@ -124,6 +124,11 @@
         sku: per_gb2018
         state: present
       register: workspace
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
 
   rescue: 
     - name : Create vm
