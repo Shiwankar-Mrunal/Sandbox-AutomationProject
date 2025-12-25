@@ -40,6 +40,6 @@ keyed_groups:
   - key: location
     prefix: azure_location
 
-all:
-  vars:
-    ansible_python_interpreter: python3
+# all:
+#   vars:
+#     ansible_python_interpreter: python3
