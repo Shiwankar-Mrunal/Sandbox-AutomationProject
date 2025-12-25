@@ -53,7 +53,8 @@ jobs:
               pip install ansible[azure]
               pip install azure-mgmt-privatedns
               pip install azure-mgmt-containerservice
-              pip install /home/azureuser/.ansible/collections/ansible_collections/azure/azcollection/.txt
+              pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+
 
       - name: Run Ansible Playbook
         run: |
