@@ -52,6 +52,7 @@ jobs:
               pip install azure-identity==1.12.0
               pip install "ansible[azure]"
               pip install azure-mgmt-privatedns
+              pip install azure-mgmt-containerservice
         # pip install -r /home/azureuser/.ansible/collections/ansible_collections/azure/azcollection/.txt
 
       - name: Run Ansible Playbook
