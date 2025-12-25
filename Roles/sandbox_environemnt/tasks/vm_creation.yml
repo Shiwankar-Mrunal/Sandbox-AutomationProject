@@ -130,6 +130,34 @@
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
 
+    - name: Get Log Analytics Workspace Key
+      azure.azcollection.azure_rm_loganalyticsworkspace_info:
+        resource_group: "{{Resource_group_name}}"
+        name: M-Workspace
+      register: workspace_info
+
+    - debug:
+        msg:
+          WorkspaceId: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
+          PrimaryKey: "{{ workspace_info.azure_loganalyticsworkspaces[0].primary_shared_key }}"
+
+    - name: Enable diagnostic settings on VM
+      azure.azcollection.azure_rm_monitor_diagnostic_setting:
+        name: VMDiagnostics
+        resource_uri: /subscriptions/<subscription-id>/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/MyVM
+        workspace_id: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
+        logs:
+          - category: 'AuditLogs'
+            enabled: true
+          - category: 'Application'
+            enabled: true
+          - category: 'Security'
+            enabled: true
+        metrics:
+          - category: 'AllMetrics'
+            enabled: true
+        state: present
+
   rescue: 
     - name : Create vm
       fail :
