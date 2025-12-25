@@ -139,7 +139,7 @@
     - debug:
         msg:
           WorkspaceId: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
-          PrimaryKey: "{{ workspace_info.azure_loganalyticsworkspaces[0].primary_shared_key }}"
+          PrimaryKey: "{{ workspace_info.azure_loganalyticsworkspaces[1].primary_shared_key }}"
 
     - name: Enable diagnostic settings on VM
       azure.azcollection.azure_rm_monitor_diagnostic_setting:
