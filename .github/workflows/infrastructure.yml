@@ -39,7 +39,7 @@ jobs:
 
       - name: Install Azure SDK dependencies for Ansible
         run: |
-              python install --upgrade pip
+              python -m pip install --upgrade pip
               python -m pip install azure-mgmt-managementgroups==1.0.0
               pip install azure-mgmt-storage
               pip install azure-mgmt-compute
