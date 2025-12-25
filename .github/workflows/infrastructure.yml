@@ -36,6 +36,15 @@ jobs:
         run: |
           ansible-galaxy collection install azure.azcollection --force
 
+      - name: Install Ansible and Azure dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install ansible
+          ansible-galaxy collection install azure.azcollection
+          pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+
       - name: Install Azure SDK dependencies for Ansible
         run: |
               python -m pip install --upgrade pip
