@@ -39,6 +39,7 @@ jobs:
 
       - name: Install Azure SDK dependencies for Ansible
         run: |
+            pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
             pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
 
