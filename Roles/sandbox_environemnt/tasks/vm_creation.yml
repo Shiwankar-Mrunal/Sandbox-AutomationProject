@@ -121,9 +121,9 @@
         resource_group: "{{Resource_group_name}}"
         name: M - Workspace
         location: "{{ Location }}"
-        sku: PerGB2018
+        sku: per_gb2018
         state: present
-        register: workspace
+      register: workspace
 
   rescue: 
     - name : Create vm
