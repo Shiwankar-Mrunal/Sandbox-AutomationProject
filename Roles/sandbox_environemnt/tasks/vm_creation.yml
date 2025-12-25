@@ -119,7 +119,7 @@
     - name: Create Workspace
       azure.azcollection.azure_rm_loganalyticsworkspace:
         resource_group: "{{Resource_group_name}}"
-        name: M - Workspace
+        name: M-Workspace
         location: "{{ Location }}"
         sku: per_gb2018
         state: present
