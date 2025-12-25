@@ -30,6 +30,12 @@
        name : "{{subnet}}"
        address_prefixes: "{{address_prefixes_subnet}}"
        virtual_network: "{{vnet_name}}"
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+
 
     - name: Create public IP
       azure.azcollection.azure_rm_publicipaddress:
@@ -38,6 +44,11 @@
         name: "{{Ip_name}}"
         allocation_method: Static
         sku: Standard
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
     - name: Create NIC
       azure.azcollection.azure_rm_networkinterface:
@@ -49,7 +60,12 @@
         ip_configurations:
           - name: ipconfig1
             public_ip_address_name: "{{Ip_name}}"
-
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"           
+            
     # - name: Create NSG
     #   azure_rm_securitygroup:
     #     resource_group: "{{ Resource_group_name }}"
