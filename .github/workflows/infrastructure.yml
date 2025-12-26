@@ -43,16 +43,16 @@ jobs:
             pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
 
-      # - name: Run Ansible Playbook
-      #   run: |
-      #     ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python"
-
-
       - name: Run Ansible Playbook
-        env:
-          PYTHON_INTERPRETER: /opt/hostedtoolcache/Python/3.10.19/x64/bin/python
         run: |
-          ansible-playbook main.yml -e "ansible_python_interpreter=$PYTHON_INTERPRETER" --check --diff
+          ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python"
+
+
+      # - name: Run Ansible Playbook
+      #   env:
+      #     PYTHON_INTERPRETER: /opt/hostedtoolcache/Python/3.10.19/x64/bin/python
+      #   run: |
+      #     ansible-playbook main.yml -e "ansible_python_interpreter=$PYTHON_INTERPRETER" --check --diff
 
 
       # - name: Notify Slack
