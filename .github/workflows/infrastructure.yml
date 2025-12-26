@@ -43,9 +43,11 @@ jobs:
             pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
 
-      - name: Run Ansible Playbook
+      - name: Run Ansible Playbook (Drift Detection)
         run: |
-          ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python"
+          ansible-playbook main.yml \
+            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+            --check --diff
 
 
       # - name: Run Ansible Playbook
