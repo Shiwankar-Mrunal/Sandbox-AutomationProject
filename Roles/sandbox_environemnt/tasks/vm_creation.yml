@@ -6,12 +6,23 @@
       azure.azcollection.azure_rm_resourcegroup:
         name : "{{Resource_group_name}}"
         location : "{{Location}}"
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+
         
     - name : Create virtual network
       azure.azcollection.azure_rm_virtualnetwork : 
         resource_group: "{{Resource_group_name}}"
         name: "{{vnet_name}}"
         address_prefixes: "{{address_prefixes_vnet}}"
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
     - name : Add subnet
       azure.azcollection.azure_rm_subnet:
@@ -19,6 +30,12 @@
        name : "{{subnet}}"
        address_prefixes: "{{address_prefixes_subnet}}"
        virtual_network: "{{vnet_name}}"
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+
 
     - name: Create public IP
       azure.azcollection.azure_rm_publicipaddress:
@@ -27,6 +44,11 @@
         name: "{{Ip_name}}"
         allocation_method: Static
         sku: Standard
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
     - name: Create NIC
       azure.azcollection.azure_rm_networkinterface:
@@ -38,13 +60,11 @@
         ip_configurations:
           - name: ipconfig1
             public_ip_address_name: "{{Ip_name}}"
-
-    # - name: Create NSG
-    #   azure_rm_securitygroup:
-    #     resource_group: "{{ Resource_group_name }}"
-    #     name: "{{nsg}}"
-    #     location: "{{Location}}"
-
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"           
 
     - name: Create an SSH key pair
       ansible.builtin.openssh_keypair:
@@ -78,12 +98,70 @@
           type: SystemAssigned
         
         managed_disk_type: Standard_LRS 
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
 
     - name: Create storage account
       azure_rm_storageaccount:
         resource_group: "{{Resource_group_name}}"
         name: "{{storage}}"
         type: Standard_LRS
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
+
+   
+    - name: Create Workspace
+      azure.azcollection.azure_rm_loganalyticsworkspace:
+        resource_group: "{{Resource_group_name}}"
+        name: M-Workspace
+        location: "{{ Location }}"
+        sku: per_gb2018
+        state: present
+      register: workspace
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
+
+    # - name: Get Log Analytics Workspace Key
+    #   azure.azcollection.azure_rm_loganalyticsworkspace_info:
+    #     resource_group: "{{Resource_group_name}}"
+    #     name: M-Workspace
+    #   register: workspace_info
+
+    # - name: Show all Log Analytics workspaces
+    #   debug:
+    #     msg: 
+    #       WorkspaceId: "{{ item.customer_id }}"
+    #       PrimaryKey: "{{ item.primary_shared_key }}"
+    #   loop: "{{ workspace_info.azure_loganalyticsworkspaces }}"
+
+    # - name: Enable diagnostic settings on VM
+    #   azure.azcollection.azure_rm_resource:
+    #   api_version: '2017-05-01-preview'
+    #   scope: "/subscriptions/<subscription-id>/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/MyVM"
+    #   type: "Microsoft.Insights/diagnosticSettings"
+    #   name: "VMDiagnostics"
+    #   properties:
+    #     workspaceId: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
+    #     logs:
+    #       - category: "AuditLogs"
+    #         enabled: true
+    #       - category: "Application"
+    #         enabled: true
+    #       - category: "Security"
+    #         enabled: true
+    #     metrics:
+    #       - category: "AllMetrics"
+    #         enabled: true
+
 
   rescue: 
     - name : Create vm
