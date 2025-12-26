@@ -13,7 +13,7 @@ The solution ensures that sandbox environments are:
 ## Key Features
 
 ### 1. Infrastructure Automation
-- Provision sandbox environments using **Terraform** or **Ansible**
+- Provision sandbox environments using  **Ansible**
 - Supports creation of:
   - Virtual Machines (VMs)
   - Virtual Networks (VNets)
@@ -21,7 +21,7 @@ The solution ensures that sandbox environments are:
 - Environments are reproducible, version-controlled, and auditable
 
 ### 2. CI/CD Pipeline Integration
-- Automated deployment using CI/CD pipelines (e.g., GitHub Actions, Azure DevOps)
+- Automated deployment using CI/CD pipelines (GitHub Actions)
 - Pipelines are triggered by:
   - Code changes (push/PR)
   - Manual triggers
