@@ -163,10 +163,10 @@
     #         enabled: true
 
 
-  rescue: 
-    - name : Create vm
-      fail :
-        msg : "Failed to create Infrastructure"
+  # rescue: 
+  #   - name : Create vm
+  #     fail :
+  #       msg : "Failed to create Infrastructure"
 
   
 
