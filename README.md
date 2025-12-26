@@ -15,42 +15,39 @@ The solution ensures that sandbox environments are:
 ### 1. Infrastructure Automation
 - Provision sandbox environments using  **Ansible**
 - Supports creation of:
-  - Virtual Machines (VMs)
+  - Resource Group
   - Virtual Networks (VNets)
+  - Subnet
+  - Public Ip
+  - NIC
+  - SSH Key
+  - Virtual Machine
   - Storage Accounts
-- Environments are reproducible, version-controlled, and auditable
-
+  - Worksppace
+- Environments are reproducible
 ### 2. CI/CD Pipeline Integration
 - Automated deployment using CI/CD pipelines (GitHub Actions)
 - Pipelines are triggered by:
-  - Code changes (push/PR)
-  - Manual triggers
-  - Scheduled runs
-- Pipelines handle:
-  - Infrastructure provisioning
-  - Updates and reconfiguration
-  - Validation and compliance checks
+  - Download Python
+  - Install Azure Ansible Collection
+  - Azure SDK dependencies
+  - Run Ansible Playbook
 
 ### 3. Slack Notifications
 - Real-time alerts sent to Slack for:
   - Successful or failed provisioning
-  - CI/CD pipeline status
   - Configuration drift detection
-- Improves visibility and rapid incident response
 
 ### 4. Azure Monitor Integration
 - Monitor sandbox environments using **Azure Monitor**
-- Track:
+
   - Health and availability
   - Resource performance (CPU, memory, disk, network)
   - Logs and metrics in real time
-- Alerts configured for threshold breaches
 
 ### 5. Configuration Drift Hunter
 - Detects deviations between deployed infrastructure and desired state
 - Periodic drift detection using:
-  - Terraform plan checks or Ansible state validation
-- Automatically flags non-compliant resources
 - Helps maintain consistent and secure sandbox environments
 
 ### 6. Custom Dashboard
@@ -59,9 +56,3 @@ A centralized dashboard provides visibility into:
 - Configuration drift status across sandbox environments
 - Overall environment health and compliance
 
-----
-
-## Architecture Overview
-#
-#
-#
