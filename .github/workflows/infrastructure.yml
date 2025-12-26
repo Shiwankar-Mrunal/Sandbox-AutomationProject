@@ -43,12 +43,10 @@ jobs:
             pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
 
-      - name: Run Ansible Playbook (Drift Detection)
+      - name: Run Ansible Playbook
         run: |
-          ansible-playbook main.yml \
-            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            --check --diff
-
+          ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python"
+          
 
       # - name: Run Ansible Playbook
       #   env:
@@ -57,22 +55,22 @@ jobs:
       #     ansible-playbook main.yml -e "ansible_python_interpreter=$PYTHON_INTERPRETER" --check --diff
 
 
-      # - name: Notify Slack
-      #   run: |
-      #     curl -X POST -H 'Content-type: application/json' \
-      #     --data '{"text":"**********Welcome TO MSDN SUBSCRIPTION **************\n**********Resource group (M-Testing_Environment)**************\n**********Thank You**************"}' \
-      #     "${{ secrets.SLACK_WEBHOOK_URL }}"
-
       - name: Notify Slack
         run: |
-          if [ "${DRIFT_DETECTED}" = "true" ]; then
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":" Drift detected in sandbox environment. Check the drift report artifact for details."}' \
-              "${{ secrets.SLACK_WEBHOOK_URL }}"
-          else
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Sandbox environment is compliant. No drift detected."}' \
-              "${{ secrets.SLACK_WEBHOOK_URL }}"
-          fi
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"**********Welcome TO MSDN SUBSCRIPTION **************\n**********Resource group (M-Testing_Environment)**************\n**********Thank You**************"}' \
+          "${{ secrets.SLACK_WEBHOOK_URL }}"
+
+      # - name: Notify Slack
+      #   run: |
+      #     if [ "${DRIFT_DETECTED}" = "true" ]; then
+      #       curl -X POST -H 'Content-type: application/json' \
+      #         --data '{"text":" Drift detected in sandbox environment. Check the drift report artifact for details."}' \
+      #         "${{ secrets.SLACK_WEBHOOK_URL }}"
+      #     else
+      #       curl -X POST -H 'Content-type: application/json' \
+      #         --data '{"text":"Sandbox environment is compliant. No drift detected."}' \
+      #         "${{ secrets.SLACK_WEBHOOK_URL }}"
+      #     fi
 
       
