@@ -68,7 +68,7 @@
 
     - name: Create an SSH key pair
       ansible.builtin.openssh_keypair:
-        path: ~/.ssh/azure_vm_key  
+        path: "{{ssh_public_key}}/.ssh/azure_vm_key"
         type: rsa                  
         size: 4096  
         state : present
