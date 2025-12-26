@@ -51,30 +51,10 @@ jobs:
       - name: Notify Slack
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"**********Welcome to ansible world *************Infrastructure Created Successfully*************THANK YOU!******"}' \
+          --data '{"text":"**********Welcome TO MSDN SUBSCRIPTION **************"}' \
+          --data '{"text":"**********Resource group (M-Testing_Environment)**************"}' \
+          --data '{"text":"**********Thank You**************"}' \
           "${{ secrets.SLACK_WEBHOOK_URL }}"
-
-
-
-
-
-
-
-
-# python -m pip install --upgrade pip
-#               python -m pip install azure-mgmt-managementgroups==1.0.0
-#               pip install azure-mgmt-storage
-#               pip install azure-mgmt-compute
-#               pip install azure-mgmt-dns
-#               pip install azure-mgmt-web
-#               pip install azure-mgmt-monitor
-#               pip install azure-mgmt-privatedns
-#               pip install azure-mgmt-network==19.0.0
-#               pip install azure-mgmt-resource==20.0.0
-#               pip install azure-identity==1.12.0
-#               pip install ansible[azure]
-#               pip install azure-mgmt-privatedns
-#               pip install azure-mgmt-containerservice
 
       
 
