@@ -83,7 +83,10 @@
         ssh_password_enabled: false
         ssh_public_keys:
           - path: /home/{{ admin_username }}/.ssh/authorized_keys
-            key_data: "{{ ssh_key_result.public_key | string}}"
+            # key_data: "{{ ssh_key_result.public_key | string}}"
+            key_data: >-
+              {{ ssh_key_result.public_key
+              if ssh_key_result is defined else ssh_public_key }}
         network_interface_names:
           - "{{ NIC_name }}"
         image:
