@@ -68,11 +68,9 @@
 
     - name: Create an SSH key pair
       ansible.builtin.openssh_keypair:
-        path: "{{ssh_public_key}}/.ssh/azure_vm_key"
+        path: ~/.ssh/azure_vm_key  
         type: rsa                  
-        size: 4096  
-        state : present
-        force : false               
+        size: 4096                 
       register: ssh_key_result
 
     - name: Create vm
@@ -115,19 +113,19 @@
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
 
    
-    # - name: Create Workspace
-    #   azure.azcollection.azure_rm_loganalyticsworkspace:
-    #     resource_group: "{{Resource_group_name}}"
-    #     name: M-Workspace
-    #     location: "{{ Location }}"
-    #     sku: per_gb2018
-    #     state: present
-    #   register: workspace
-    #   environment:
-    #     AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
-    #     AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
-    #     AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-    #     AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
+    - name: Create Workspace
+      azure.azcollection.azure_rm_loganalyticsworkspace:
+        resource_group: "{{Resource_group_name}}"
+        name: M-Workspace
+        location: "{{ Location }}"
+        sku: per_gb2018
+        state: present
+      register: workspace
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
 
     # - name: Get Log Analytics Workspace Key
     #   azure.azcollection.azure_rm_loganalyticsworkspace_info:
