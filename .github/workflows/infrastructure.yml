@@ -51,9 +51,7 @@ jobs:
       - name: Notify Slack
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"**********Welcome TO MSDN SUBSCRIPTION **************"}' \
-          --data '{"text":"**********Resource group (M-Testing_Environment)**************"}' \
-          --data '{"text":"**********Thank You**************"}' \
+          --data '{"text":"**********Welcome TO MSDN SUBSCRIPTION **************\n**********Resource group (M-Testing_Environment)**************\n**********Thank You**************"}' \
           "${{ secrets.SLACK_WEBHOOK_URL }}"
 
       
