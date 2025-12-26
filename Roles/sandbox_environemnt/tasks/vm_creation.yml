@@ -143,24 +143,24 @@
     #       PrimaryKey: "{{ item.primary_shared_key }}"
     #   loop: "{{ workspace_info.azure_loganalyticsworkspaces }}"
 
-    - name: Enable diagnostic settings on VM
-      azure.azcollection.azure_rm_resource:
-      api_version: '2017-05-01-preview'
-      scope: "/subscriptions/<subscription-id>/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/MyVM"
-      type: "Microsoft.Insights/diagnosticSettings"
-      name: "VMDiagnostics"
-      properties:
-        workspaceId: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
-        logs:
-          - category: "AuditLogs"
-            enabled: true
-          - category: "Application"
-            enabled: true
-          - category: "Security"
-            enabled: true
-        metrics:
-          - category: "AllMetrics"
-            enabled: true
+    # - name: Enable diagnostic settings on VM
+    #   azure.azcollection.azure_rm_resource:
+    #   api_version: '2017-05-01-preview'
+    #   scope: "/subscriptions/<subscription-id>/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/MyVM"
+    #   type: "Microsoft.Insights/diagnosticSettings"
+    #   name: "VMDiagnostics"
+    #   properties:
+    #     workspaceId: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
+    #     logs:
+    #       - category: "AuditLogs"
+    #         enabled: true
+    #       - category: "Application"
+    #         enabled: true
+    #       - category: "Security"
+    #         enabled: true
+    #     metrics:
+    #       - category: "AllMetrics"
+    #         enabled: true
 
 
   rescue: 
