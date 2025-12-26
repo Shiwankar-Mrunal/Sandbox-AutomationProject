@@ -83,8 +83,8 @@
         admin_username: "{{admin_username}}"
         ssh_password_enabled: false
         ssh_public_keys:
-              - path: /home/azureuser/.ssh/authorized_keys
-                key_data: "{{ssh_key_result.public_key}}"
+          - path: /home/azureuser/.ssh/authorized_keys
+            key_data: "{{ssh_key_result.public_key}}"
         network_interface_names: 
             - "{{ NIC_name }}"  
 
