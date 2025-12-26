@@ -45,15 +45,36 @@ jobs:
 
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python"
+          ansible-playbook main.yml \
+              -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" 
+
+      - name: Run Ansible Playbook in Drift Detection Mode
+        id: drift
+        run: |
+          set -e
+          # Run in check mode and save output
+          ansible-playbook main.yml \
+            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+            --check --diff > drift.log || true
+
+          # Check if drift.log contains changes
+          if grep -q 'changed=' drift.log; then
+            echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
+          else
+            echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
+          fi
           
 
       - name: Notify Slack
         run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"**********Welcome TO MSDN SUBSCRIPTION **************\n**********Resource group (M-Testing_Environment)**************\n**********Thank You**************"}' \
-          "${{ secrets.SLACK_WEBHOOK_URL }}"
-
-      
+          if [ "${DRIFT_DETECTED}" = "true" ]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data '{"text":" Drift detected while sandbox creation. Please check Run ANsible Playbook step in pipeline run"}' \
+              "${{ secrets.SLACK_WEBHOOK_URL }}"
+          else
+            curl -X POST -H 'Content-type: application/json' \
+              --data '{"text":"Sandbox environment is created. No drift detected."}' \
+              "${{ secrets.SLACK_WEBHOOK_URL }}"
+          fi
 
       
