@@ -52,6 +52,8 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data '{"text":"**********Welcome TO MSDN SUBSCRIPTION **************"}' \
+          --data '{"text":"**********Resource group (M-Testing_Environment)**************"}' \
+          --data '{"text":"**********Thank You**************"}' \
           "${{ secrets.SLACK_WEBHOOK_URL }}"
 
       
