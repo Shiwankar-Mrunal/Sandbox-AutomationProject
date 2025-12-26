@@ -69,11 +69,11 @@ jobs:
         run: |
           if [ "${DRIFT_DETECTED}" = "true" ]; then
             curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":" Drift detected in sandbox environment. Check the drift report artifact for details."}' \
+              --data '{"text":" Drift detected while sandbox creation. Please check Run ANsible Playbook step in pipeline run"}' \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
           else
             curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Sandbox environment is compliant. No drift detected."}' \
+              --data '{"text":"Sandbox environment is created. No drift detected."}' \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
           fi
 
