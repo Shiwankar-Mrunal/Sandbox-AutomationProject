@@ -70,7 +70,9 @@
       ansible.builtin.openssh_keypair:
         path: ~/.ssh/azure_vm_key  
         type: rsa                  
-        size: 4096                 
+        size: 4096  
+        state : present
+        # force : false               
       register: ssh_key_result
 
     - name: Create vm
