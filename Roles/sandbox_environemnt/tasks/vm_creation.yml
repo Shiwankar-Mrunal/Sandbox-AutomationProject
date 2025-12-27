@@ -77,7 +77,7 @@
     - name: Create vm
       azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ rg.state.name }}"
-        location: "{{ rg.state.location }}"
+        location: "{{ Location }}"
         name: "{{ vm_name }}"
         vm_size: "{{ vm_size }}"
         admin_username: "{{ admin_username }}"
