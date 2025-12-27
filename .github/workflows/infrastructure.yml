@@ -93,9 +93,9 @@ jobs:
             sudo groupadd prometheus
           fi
 
-          # Check if the 'prometheus' user exists; if not, create it
+          # Check if the 'prometheus' user exists; if not, create it and add to the 'prometheus' group
           if ! id -u prometheus > /dev/null 2>&1; then
-            sudo useradd --no-create-home --shell /bin/false prometheus
+            sudo useradd --no-create-home --shell /bin/false -g prometheus prometheus
           fi
         shell: /usr/bin/bash -e {0}
         env:
@@ -111,6 +111,7 @@ jobs:
           Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
           LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
           DRIFT_DETECTED: true
+
 
 
       - name: Set permissions for Prometheus directory
