@@ -6,6 +6,7 @@
       azure.azcollection.azure_rm_resourcegroup:
         name : "{{Resource_group_name}}"
         location : "{{Location}}"
+      register : rg
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
@@ -15,7 +16,7 @@
         
     - name : Create virtual network
       azure.azcollection.azure_rm_virtualnetwork : 
-        resource_group: "{{Resource_group_name}}"
+        resource_group: "{{ rg_result.state.name }}"
         name: "{{vnet_name}}"
         address_prefixes: "{{address_prefixes_vnet}}"
       environment:
