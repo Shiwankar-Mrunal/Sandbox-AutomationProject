@@ -86,6 +86,11 @@ jobs:
         run: |
           tar -xzvf /tmp/prometheus.tar.gz -C /opt/
 
+      - name: List contents of /opt to verify extraction path
+        run: |
+          echo "Listing contents of /opt/"
+          ls -l /opt/
+
       - name: Create Prometheus user and group
         run: |
           # Check if the 'prometheus' group exists; if not, create it
@@ -113,59 +118,12 @@ jobs:
           DRIFT_DETECTED: true
 
 
-
-      # - name: Set permissions for Prometheus directory
-      #   run: |
-      #     # Ensure the directory exists before setting permissions
-      #     if [ -d "/opt/prometheus" ]; then
-      #       sudo chown -R prometheus:prometheus /opt/prometheus
-      #       sudo chmod -R 755 /opt/prometheus
-      #     else
-      #       echo "Prometheus directory does not exist. Skipping permissions step."
-      #       exit 1
-      #     fi
-      #   shell: /usr/bin/bash -e {0}
-      #   env:
-      #     AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      #     AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
-      #     AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
-      #     AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #     pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
-      #     PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
-      #     Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-      #     Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-      #     Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-      #     LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
-      #     DRIFT_DETECTED: true
-
-      # - name: Start Prometheus as a service
-      #   run: |
-      #     sudo tee /etc/systemd/system/prometheus.service > /dev/null <<EOF
-      #     [Unit]
-      #     Description=Prometheus
-      #     Documentation=https://prometheus.io/docs/introduction/overview/
-      #     After=network.target
-
-      #     [Service]
-      #     User=prometheus
-      #     Group=prometheus
-      #     ExecStart=/opt/prometheus/prometheus --config.file=/opt/prometheus/prometheus.yml
-
-      #     [Install]
-      #     WantedBy=multi-user.target
-      #     EOF
-
-      #     sudo systemctl daemon-reload
-      #     sudo systemctl start prometheus
-      #     sudo systemctl enable prometheus
-
       - name: Set permissions for Prometheus directory
         run: |
-          # Ensure the directory exists before setting permissions
-          if [ -d "/opt/prometheus" ]; then
-            sudo chown -R prometheus:prometheus /opt/prometheus
-            sudo chmod -R 755 /opt/prometheus
+          # Adjust to the actual extracted directory path
+          if [ -d "/opt/prometheus-2.34.0.linux-amd64" ]; then
+            sudo chown -R prometheus:prometheus /opt/prometheus-2.34.0.linux-amd64
+            sudo chmod -R 755 /opt/prometheus-2.34.0.linux-amd64
           else
             echo "Prometheus directory does not exist. Skipping permissions step."
             exit 1
@@ -184,6 +142,27 @@ jobs:
           Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
           LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
           DRIFT_DETECTED: true
+
+      - name: Start Prometheus as a service
+        run: |
+          sudo tee /etc/systemd/system/prometheus.service > /dev/null <<EOF
+          [Unit]
+          Description=Prometheus
+          Documentation=https://prometheus.io/docs/introduction/overview/
+          After=network.target
+
+          [Service]
+          User=prometheus
+          Group=prometheus
+          ExecStart=/opt/prometheus/prometheus --config.file=/opt/prometheus/prometheus.yml
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          sudo systemctl daemon-reload
+          sudo systemctl start prometheus
+          sudo systemctl enable prometheus
 
 
 
