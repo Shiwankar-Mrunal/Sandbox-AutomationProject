@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'ci_pipeline'
+    static_configs:
+      - targets: ['localhost:9090']  # Replace with your sandbox pipeline metrics endpoint
+  - job_name: 'azure_monitor'
+    static_configs:
+      - targets: ['azure-monitor-endpoint']
