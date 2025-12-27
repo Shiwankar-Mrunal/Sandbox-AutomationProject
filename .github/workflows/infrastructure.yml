@@ -77,35 +77,4 @@ jobs:
           fi
 
 
-      - name: Download Prometheus tarball
-        shell:
-          url: "https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-amd64.tar.gz"
-          dest: "/tmp/prometheus.tar.gz"
-
-      # - name: Extract Prometheus
-      #   unarchive:
-      #     src: "/tmp/prometheus.tar.gz"
-      #     dest: "/opt/"
-      #     remote_src: yes
-
-      # - name: Create Prometheus user and group
-      #   user:
-      #     name: prometheus
-      #     group: prometheus
-      #     create_home: yes
-
-      # - name: Set permissions for Prometheus directory
-      #   file:
-      #     path: "/opt/prometheus"
-      #     owner: prometheus
-      #     group: prometheus
-      #     mode: "0755"
-
-      # - name: Start Prometheus as a service
-      #   systemd:
-      #     name: prometheus
-      #     state: started
-      #     enabled: yes
-      #     user: prometheus
-      #     group: prometheus
-      #     exec_start: "/opt/prometheus/prometheus --config.file=/opt/prometheus/prometheus.yml"
+        
