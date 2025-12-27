@@ -88,8 +88,30 @@ jobs:
 
       - name: Create Prometheus user and group
         run: |
-          sudo useradd --no-create-home --shell /bin/false prometheus
-          sudo groupadd prometheus
+          # Check if the 'prometheus' group exists; if not, create it
+          if ! getent group prometheus > /dev/null 2>&1; then
+            sudo groupadd prometheus
+          fi
+
+          # Check if the 'prometheus' user exists; if not, create it
+          if ! id -u prometheus > /dev/null 2>&1; then
+            sudo useradd --no-create-home --shell /bin/false prometheus
+          fi
+        shell: /usr/bin/bash -e {0}
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
+          AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
+          PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
+          Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+          Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+          Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+          LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
+          DRIFT_DETECTED: true
+
 
       - name: Set permissions for Prometheus directory
         run: |
