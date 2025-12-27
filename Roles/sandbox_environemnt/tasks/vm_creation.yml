@@ -27,7 +27,7 @@
 
     - name : Add subnet
       azure.azcollection.azure_rm_subnet:
-       resource_group: "{{Resource_group_name}}"
+       resource_group: "{{ rg.state.name }}"
        name : "{{subnet}}"
        address_prefixes: "{{address_prefixes_subnet}}"
        virtual_network: "{{vnet_name}}"
@@ -40,8 +40,8 @@
 
     - name: Create public IP
       azure.azcollection.azure_rm_publicipaddress:
-        resource_group: "{{ Resource_group_name }}"
-        location: "{{ Location }}"
+        resource_group: "{{ rg.state.name }}"
+        location: "{{ rg.state.location }}"
         name: "{{Ip_name}}"
         allocation_method: Static
         sku: Standard
@@ -53,9 +53,9 @@
 
     - name: Create NIC
       azure.azcollection.azure_rm_networkinterface:
-        resource_group: "{{ Resource_group_name }}"
+        resource_group: "{{ rg.state.name }}"
         name: "{{NIC_name}}"
-        location : "{{Location}}"
+        location : "{{ rg.state.location }}"
         virtual_network: "{{vnet_name}}"
         subnet: "{{subnet}}"
         ip_configurations:
@@ -76,8 +76,8 @@
 
     - name: Create vm
       azure.azcollection.azure_rm_virtualmachine:
-        resource_group: "{{ Resource_group_name }}"
-        location: "{{ Location }}"
+        resource_group: "{{ rg.state.name }}"
+        location: "{{ rg.state.location }}"
         name: "{{ vm_name }}"
         vm_size: "{{ vm_size }}"
         admin_username: "{{ admin_username }}"
@@ -104,7 +104,7 @@
 
     - name: Create storage account
       azure_rm_storageaccount:
-        resource_group: "{{Resource_group_name}}"
+        resource_group: "{{ rg.state.name }}"
         name: "{{storage}}"
         type: Standard_LRS
       environment:
