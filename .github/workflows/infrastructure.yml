@@ -77,7 +77,7 @@ jobs:
           fi
 
       - name: Download Prometheus tarball
-        get_url:
+        run:
           url: "https://github.com/prometheus/prometheus/releases/download/v2.34.0/prometheus-2.34.0.linux-amd64.tar.gz"
           dest: "/tmp/prometheus.tar.gz"
 
