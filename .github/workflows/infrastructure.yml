@@ -75,8 +75,3 @@ jobs:
               --data '{"text":"Sandbox environment is created. No drift detected."}' \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
           fi
-
-          
-      - name: Push metrics to Prometheus Pushgateway
-        run: |
-          curl -X POST -d 'job=github-actions&status=success' http://pushgateway.example.com/metrics/job/github_actions
