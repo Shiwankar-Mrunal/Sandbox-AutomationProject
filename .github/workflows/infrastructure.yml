@@ -15,12 +15,12 @@ jobs:
     name: Provision Sandbox Install python, Install Azure Ansible Collection, Install Azure SDK for Ansible, Run Playbook.
     runs-on: ubuntu-latest
 
-    # env:
-    #   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-    #   AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
-    #   AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
-    #   AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    #   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
+      AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps : 
 
