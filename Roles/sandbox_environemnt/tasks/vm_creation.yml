@@ -16,7 +16,7 @@
         
     - name : Create virtual network
       azure.azcollection.azure_rm_virtualnetwork : 
-        resource_group: "{{ rg_result.state.name }}"
+        resource_group: rg[0]
         name: "{{vnet_name}}"
         address_prefixes: "{{address_prefixes_vnet}}"
       environment:
