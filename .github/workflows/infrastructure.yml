@@ -166,7 +166,7 @@ jobs:
 
       - name: Verify Prometheus Service is Running
         run: |
-          systemctl status prometheus
+          sudo systemctl status prometheus
 
 
 
