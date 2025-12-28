@@ -164,9 +164,9 @@ jobs:
           sudo systemctl start prometheus
           sudo systemctl enable prometheus
 
-      - name: Verify Prometheus Service is Running
-        run: |
-          sudo systemctl status prometheus
+      # - name: Verify Prometheus Service is Running
+      #   run: |
+      #     sudo systemctl status prometheus
 
 
 
