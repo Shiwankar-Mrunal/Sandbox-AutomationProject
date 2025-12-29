@@ -6,6 +6,7 @@
       azure.azcollection.azure_rm_resourcegroup:
         name : "{{Resource_group_name}}"
         location : "{{Location}}"
+      register : rg
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
@@ -15,7 +16,7 @@
         
     - name : Create virtual network
       azure.azcollection.azure_rm_virtualnetwork : 
-        resource_group: "{{Resource_group_name}}"
+        resource_group: "{{ rg.state.name }}"
         name: "{{vnet_name}}"
         address_prefixes: "{{address_prefixes_vnet}}"
       environment:
@@ -26,7 +27,7 @@
 
     - name : Add subnet
       azure.azcollection.azure_rm_subnet:
-       resource_group: "{{Resource_group_name}}"
+       resource_group: "{{ rg.state.name }}"
        name : "{{subnet}}"
        address_prefixes: "{{address_prefixes_subnet}}"
        virtual_network: "{{vnet_name}}"
@@ -39,8 +40,8 @@
 
     - name: Create public IP
       azure.azcollection.azure_rm_publicipaddress:
-        resource_group: "{{ Resource_group_name }}"
-        location: "{{ Location }}"
+        resource_group: "{{ rg.state.name }}"
+        location: "{{ rg.state.location }}"
         name: "{{Ip_name}}"
         allocation_method: Static
         sku: Standard
@@ -52,9 +53,9 @@
 
     - name: Create NIC
       azure.azcollection.azure_rm_networkinterface:
-        resource_group: "{{ Resource_group_name }}"
+        resource_group: "{{ rg.state.name }}"
         name: "{{NIC_name}}"
-        location : "{{Location}}"
+        location : "{{ rg.state.location }}"
         virtual_network: "{{vnet_name}}"
         subnet: "{{subnet}}"
         ip_configurations:
@@ -70,12 +71,13 @@
       ansible.builtin.openssh_keypair:
         path: ~/.ssh/azure_vm_key  
         type: rsa                  
-        size: 4096                 
+        size: 4096    
+        state: present             
       register: ssh_key_result
 
     - name: Create vm
       azure.azcollection.azure_rm_virtualmachine:
-        resource_group: "{{ Resource_group_name }}"
+        resource_group: "{{ rg.state.name }}"
         location: "{{ Location }}"
         name: "{{ vm_name }}"
         vm_size: "{{ vm_size }}"
@@ -103,7 +105,7 @@
 
     - name: Create storage account
       azure_rm_storageaccount:
-        resource_group: "{{Resource_group_name}}"
+        resource_group: "{{ rg.state.name }}"
         name: "{{storage}}"
         type: Standard_LRS
       environment:
@@ -111,59 +113,12 @@
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
-
    
-    - name: Create Workspace
-      azure.azcollection.azure_rm_loganalyticsworkspace:
-        resource_group: "{{Resource_group_name}}"
-        name: M-Workspace
-        location: "{{ Location }}"
-        sku: per_gb2018
-        state: present
-      register: workspace
-      environment:
-        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
-        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
-        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
 
-    # - name: Get Log Analytics Workspace Key
-    #   azure.azcollection.azure_rm_loganalyticsworkspace_info:
-    #     resource_group: "{{Resource_group_name}}"
-    #     name: M-Workspace
-    #   register: workspace_info
-
-    # - name: Show all Log Analytics workspaces
-    #   debug:
-    #     msg: 
-    #       WorkspaceId: "{{ item.customer_id }}"
-    #       PrimaryKey: "{{ item.primary_shared_key }}"
-    #   loop: "{{ workspace_info.azure_loganalyticsworkspaces }}"
-
-    # - name: Enable diagnostic settings on VM
-    #   azure.azcollection.azure_rm_resource:
-    #   api_version: '2017-05-01-preview'
-    #   scope: "/subscriptions/<subscription-id>/resourceGroups/MyResourceGroup/providers/Microsoft.Compute/virtualMachines/MyVM"
-    #   type: "Microsoft.Insights/diagnosticSettings"
-    #   name: "VMDiagnostics"
-    #   properties:
-    #     workspaceId: "{{ workspace_info.azure_loganalyticsworkspaces[0].customer_id }}"
-    #     logs:
-    #       - category: "AuditLogs"
-    #         enabled: true
-    #       - category: "Application"
-    #         enabled: true
-    #       - category: "Security"
-    #         enabled: true
-    #     metrics:
-    #       - category: "AllMetrics"
-    #         enabled: true
-
-
-  # rescue: 
-  #   - name : Create vm
-  #     fail :
-  #       msg : "Failed to create Infrastructure"
+  rescue: 
+    - name : Create vm
+      fail :
+        msg : "Failed to create Infrastructure"
 
   
 
