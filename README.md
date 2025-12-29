@@ -104,8 +104,11 @@ The solution ensures that sandbox environments are:
 A centralized dashboard provides visibility into:
 - CI/CD pipeline execution status
 - Configuration drift status across sandbox environments
-- Overall environment health and compliance
+- Overall environment health
 
 ### 7. Future Scope 
 - Can perfor using Terraform
 - Multiple Cloud Support
+- Cost Calculation
+- Check Complience
+- Add Roles in pipeline

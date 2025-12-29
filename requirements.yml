@@ -1,4 +1,4 @@
 #Ansible Galaxy requirements file for Azure collection
-collections:
-  - name: azure.azcollection
+# collections:
+#   - name: azure.azcollection
     # version: ">=2.6.0,<2.7.0"
