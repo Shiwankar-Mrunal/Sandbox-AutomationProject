@@ -61,5 +61,4 @@ A centralized dashboard provides visibility into:
 
 ----
 
-## Architecture Overview
-#
+
