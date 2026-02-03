@@ -65,16 +65,31 @@ jobs:
           fi
           
 
+      # - name: Notify Slack
+      #   run: |
+      #     if [ "${DRIFT_DETECTED}" = "true" ]; then
+      #       curl -X POST -H 'Content-type: application/json' \
+      #         --data '{"text":" Drift detected while sandbox creation. Please check Run ANsible Playbook step in pipeline run"}' \
+      #         "${{ secrets.SLACK_WEBHOOK_URL }}"
+      #     else
+      #       curl -X POST -H 'Content-type: application/json' \
+      #         --data '{"text":"Sandbox environment is created. No drift detected."}' \
+      #         "${{ secrets.SLACK_WEBHOOK_URL }}"
+          # fi
+
       - name: Notify Slack
         run: |
+          RESOURCE_GROUP_NAME="${RESOURCE_GROUP}"
+
           if [ "${DRIFT_DETECTED}" = "true" ]; then
             curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":" Drift detected while sandbox creation. Please check Run ANsible Playbook step in pipeline run"}' \
+              --data "{\"text\":\" Drift detected while sandbox creation.\nResource Group: *${RESOURCE_GROUP_NAME}*\nPlease check Run Ansible Playbook step in pipeline run.\"}" \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
           else
             curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Sandbox environment is created. No drift detected."}' \
+              --data "{\"text\":\" Sandbox environment is created successfully.\nResource Group: *${RESOURCE_GROUP_NAME}*\nNo drift detected.\"}" \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
           fi
+
 
       
