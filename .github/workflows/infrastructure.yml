@@ -3,7 +3,7 @@ name: Sandbox environment automation
 on:
   push: 
     branches: 
-      - v2_slack
+            - multiple_vm  
   pull_request:
     branches: 
       - main
