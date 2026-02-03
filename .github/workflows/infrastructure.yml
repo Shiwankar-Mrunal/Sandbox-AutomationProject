@@ -64,6 +64,7 @@ jobs:
             echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
           else
             echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
+          fi
 
       - name: Notify Slack
         run: |
