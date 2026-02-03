@@ -129,7 +129,7 @@
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
-        name: "{{ target_rg_name | default(omit) }}"
+        name: "{{ resource_group_name }}"
       register: rg_info
       tags: fetch_rg
       environment:
@@ -140,7 +140,7 @@
 
     - name: Set RG name variable
       set_fact:
-        my_rg_name: "{{ rg_info.resourcegroups[4].name }}"
+        my_rg_name: "{{ rg_info.resourcegroups[0].name }}"
       tags: fetch_rg
 
     - name: Write RG name to file for pipeline
