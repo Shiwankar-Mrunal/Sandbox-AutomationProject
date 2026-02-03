@@ -1,4 +1,80 @@
      
+# name: Sandbox environment automation
+
+# on:
+#   push: 
+#     branches: 
+#       - v2_slack
+#   pull_request:
+#     branches: 
+#       - main
+#     types: [opened, synchronize, reopened]
+
+# jobs:
+#   provision_sandbox:
+#     name: Provision Sandbox
+#     runs-on: ubuntu-latest
+
+#     env:
+#       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#       AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
+#       AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
+#       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+#     steps: 
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with: 
+#           python-version: '3.10'
+
+#       - name: Install Azure Ansible Collection
+#         run: |
+#           ansible-galaxy collection install azure.azcollection --force
+
+#       - name: Install Azure SDK dependencies for Ansible
+#         run: |
+#           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
+#           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+
+#       - name: Run Ansible Playbook
+#         run: |
+#           ansible-playbook main.yml \
+#             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+#             -e "resource_group_name=MyResourceGroup"  # Optional: if dynamic, update playbook to output it
+      
+
+#       - name: Run Ansible Playbook in Drift Detection Mode
+#         id: drift
+#         run: |
+#           set -e
+#           ansible-playbook main.yml \
+#             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+#             --check --diff > drift.log || true
+
+#           if grep -q 'changed=' drift.log; then
+#             echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
+#           else
+#             echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
+#           fi
+
+#       - name: Notify Slack
+#         run: |
+#           if [ "${DRIFT_DETECTED}" = "true" ]; then
+#             curl -X POST -H 'Content-type: application/json' \
+#               --data '{"text":"Drift detected while sandbox creation for Resource Group: '"${RESOURCE_GROUP}"'. Please check the pipeline run."}' \
+#               "${{ secrets.SLACK_WEBHOOK_URL }}"
+#           else
+#             curl -X POST -H 'Content-type: application/json' \
+#               --data '{"text":"Sandbox environment for Resource Group: '"${RESOURCE_GROUP}"' is created. No drift detected."}' \
+#               "${{ secrets.SLACK_WEBHOOK_URL }}"
+#           fi
+
+
+
 name: Sandbox environment automation
 
 on:
@@ -40,28 +116,17 @@ jobs:
           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
-      - name: Run Ansible Playbook
+      - name: Run Ansible Playbook to fetch RG
         run: |
           ansible-playbook main.yml \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            -e "resource_group_name=MyResourceGroup"  # Optional: if dynamic, update playbook to output it
+            --tags fetch_rg
 
-      # - name: Capture Resource Group Name
-      #   id: resource_group
-      #   run: |
-      #     RG_NAME=$(grep 'resource_group:' Roles/sandbox_environment/tasks/vm_creation.yml | awk '{print $2}')
-      #     echo "RESOURCE_GROUP=${RG_NAME}" >> $GITHUB_ENV
-    
-      - name : fetch Resource Group Name
+      - name: Capture Resource Group Name from Ansible
         id: resource_group
         run: |
-          RG_NAME=$(ansible-inventory --list | jq -r '._meta.hostvars[] | select(.resource_group_name != null) | .resource_group_name' | head -n 1)
+          RG_NAME=$(ansible -i localhost, -m debug -a "msg={{ my_rg_name }}" main.yml --tags fetch_rg | grep 'msg' | head -1 | awk -F'"' '{print $2}')
           echo "RESOURCE_GROUP=${RG_NAME}" >> $GITHUB_ENV
-
-      - name :  Display Resource Group Name
-        run: |
-          echo "Resource Group Name is: ${RESOURCE_GROUP}"
-      
 
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
@@ -87,5 +152,3 @@ jobs:
             curl -X POST -H 'Content-type: application/json' \
               --data '{"text":"Sandbox environment for Resource Group: '"${RESOURCE_GROUP}"' is created. No drift detected."}' \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
-          fi
-
