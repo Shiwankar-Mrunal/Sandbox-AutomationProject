@@ -70,9 +70,10 @@ jobs:
         run: |
           if [ "${DRIFT_DETECTED}" = "true" ]; then
             curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"Drift detected while sandbox creation for Resource Group: ${RESOURCE_GROUP}. Please check the pipeline run.\"}" \
+              --data '{"text":"Drift detected while sandbox creation for Resource Group: '"${RESOURCE_GROUP}"'. Please check the pipeline run."}' \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
           else
             curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\":\"Sandbox environment for Resource Group: ${RESOURCE_GROUP} is created. No drift detected.\"}" \
+              --data '{"text":"Sandbox environment for Resource Group: '"${RESOURCE_GROUP}"' is created. No drift detected."}' \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
+
