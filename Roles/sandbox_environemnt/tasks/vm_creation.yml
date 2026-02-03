@@ -140,7 +140,7 @@
 
     - name: Set RG name variable
       set_fact:
-        my_rg_name: "{{ rg_info.resourcegroups[2].name }}"
+        my_rg_name: "{{ rg_info.resourcegroups[4].name }}"
       tags: fetch_rg
 
     - name: Write RG name to file for pipeline
