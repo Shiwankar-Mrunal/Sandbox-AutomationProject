@@ -4,11 +4,8 @@
 
     - name: Create Resource Group
       azure.azcollection.azure_rm_resourcegroup:
-        # name : "{{Resource_group_name}}"
-        # location : "{{Location}}"
-        name : "{{ item }}"
+        name : "{{Resource_group_name}}"
         location : "{{Location}}"
-      loop: "{{ Resource_group_name }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
@@ -132,9 +129,7 @@
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
-        # name: "{{ Resource_group_name  }}"
-        name : item
-      loop: "{{ Resource_group_name }}"
+        name: "{{ Resource_group_name  }}"
       register: rg_info
       tags: fetch_rg
       environment:
@@ -145,16 +140,11 @@
 
     - name: Set RG name variable
       set_fact:
-        # my_rg_name: "{{ rg_info.resourcegroups[0].name }}"
-        my_rg_name: "{{ item.name }}"
-      loop: "{{ rg_info.results }}"
+        my_rg_name: "{{ rg_info.resourcegroups[0].name }}"
       tags: fetch_rg
 
     - name: Write RG name to file for pipeline
       copy:
-        # content: "{{ my_rg_name }}"
-        # dest: /tmp/resource_group_name.txt
-        content: "{{ item.name }}"
+        content: "{{ my_rg_name }}"
         dest: /tmp/resource_group_name.txt
-      loop: "{{ rg_info.results }}"
       tags: fetch_rg
