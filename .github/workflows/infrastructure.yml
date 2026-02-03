@@ -46,7 +46,6 @@ jobs:
             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
 
       
-
       - name: Run Ansible Playbook to fetch RG
         run: |
           ansible-playbook main.yml \
