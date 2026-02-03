@@ -18,3 +18,5 @@
     number_of_sandboxes: 3        
     base_rg_name: "M-sandbox-rg"
     location: "eastus"
+  roles:
+    - sandbox_environemnt
