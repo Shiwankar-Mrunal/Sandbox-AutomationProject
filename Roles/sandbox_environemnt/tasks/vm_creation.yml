@@ -148,12 +148,3 @@
         content: "{{ my_rg_name }}"
         dest: /tmp/resource_group_name.txt
       tags: fetch_rg
-
-
-
-
-
-  
-
-    
-
