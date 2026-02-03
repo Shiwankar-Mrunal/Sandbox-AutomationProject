@@ -10,13 +10,60 @@
 #     - sandbox_environemnt
 
 
-- name: Infrastructure vm_creation
+# - name: Infrastructure vm_creation
+#   hosts: localhost
+#   connection: local
+#   gather_facts: false
+#   vars:
+#     number_of_sandboxes: 3        
+#     base_rg_name: "M-sandbox-rg"
+#     location: "eastus"
+#   roles:
+#     - sandbox_environemnt
+
+
+---
+- name: Create multiple Azure sandboxes dynamically
   hosts: localhost
   connection: local
   gather_facts: false
+
   vars:
-    number_of_sandboxes: 3        
-    base_rg_name: "M-sandbox-rg"
-    location: "eastus"
-  roles:
-    - sandbox_environemnt
+    # Default values (can be overridden via -e)
+    number_of_sandboxes: 3
+    base_rg_name: sandbox-rg
+    location: eastus
+
+  tasks:
+
+    # Step 1: Initialize the list
+    - name: Initialize resource_groups_list
+      set_fact:
+        resource_groups_list: []
+
+    # Step 2: Build resource_groups_list dynamically
+    - name: Build resource_groups_list for each sandbox
+      set_fact:
+        resource_groups_list: "{{ resource_groups_list + [ item_dict ] }}"
+      vars:
+        item_dict:
+          name: "{{ base_rg_name }}-{{ item }}"
+          location: "{{ location }}"
+          vnet_name: "sandbox-vnet-{{ item }}"
+          subnet: "subnet{{ item }}"
+          address_prefixes_vnet: "10.{{ (item | int - 1) }}.0.0/16"
+          address_prefixes_subnet: "10.{{ (item | int - 1) }}.0.0/24"
+          NIC_name: "nic{{ item }}"
+          Ip_name: "ip{{ item }}"
+          vm_name: "vm{{ item }}"
+          vm_size: "Standard_B1s"
+          admin_username: "azureuser"
+          storage: "stg{{ item }}"
+      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+
+    # Step 3: Loop over the list and create resources
+    - name: Create resources for each sandbox
+      include_tasks: sandbox_tasks.yml
+      loop: "{{ resource_groups_list }}"
+      loop_control:
+        loop_var: item
