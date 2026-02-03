@@ -152,3 +152,4 @@ jobs:
             curl -X POST -H 'Content-type: application/json' \
               --data '{"text":"Sandbox environment for Resource Group: '"${RESOURCE_GROUP}"' is created. No drift detected."}' \
               "${{ secrets.SLACK_WEBHOOK_URL }}"
+          fi
