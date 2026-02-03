@@ -128,6 +128,10 @@ jobs:
           RG_NAME=$(ansible -i localhost, -m debug -a "msg={{ my_rg_name }}" main.yml --tags fetch_rg | grep 'msg' | head -1 | awk -F'"' '{print $2}')
           echo "RESOURCE_GROUP=${RG_NAME}" >> $GITHUB_ENV
 
+      - name: Display Resource Group Name
+        run: |
+          echo " Resource Group Name: ${RESOURCE_GROUP}"
+
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
         run: |
