@@ -1,47 +1,53 @@
-#
-- name : Infrastructure vm_creation
+- name: Generate resource_groups_list dynamically
+  set_fact:
+    resource_groups_list: >-
+      {{
+        range(1, number_of_sandboxes + 1) | map('int') | map('regex_replace', '^(.*)$', 
+          '{ "name": "' ~ base_rg_name ~ '-\\1", "location": "' ~ location ~ '", "vnet_name": "sandbox-vnet-\\1", "subnet": "subnet\\1", "address_prefixes_vnet": "10.' ~ ((\\1 | int) -1) ~ '.0.0/16", "address_prefixes_subnet": "10.' ~ ((\\1 | int) -1) ~ '.0.0/24", "NIC_name": "nic\\1", "Ip_name": "ip\\1", "vm_name": "vm\\1", "vm_size": "Standard_B1s", "admin_username": "azureuser", "storage": "stg\\1" }'
+        ) | list
+      }}
+
+- name: Create all resources for each sandbox
   block:
 
     - name: Create Resource Group
       azure.azcollection.azure_rm_resourcegroup:
-        name : "{{Resource_group_name}}"
-        location : "{{Location}}"
+        name: "{{ item.name }}"
+        location: "{{ item.location }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
-        
-    - name : Create virtual network
-      azure.azcollection.azure_rm_virtualnetwork : 
-        resource_group: "{{Resource_group_name}}"
-        name: "{{vnet_name}}"
-        address_prefixes: "{{address_prefixes_vnet}}"
+    - name: Create virtual network
+      azure.azcollection.azure_rm_virtualnetwork:
+        resource_group: "{{ item.name }}"
+        name: "{{ item.vnet_name }}"
+        address_prefixes: "{{ item.address_prefixes_vnet }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
-    - name : Add subnet
+    - name: Add subnet
       azure.azcollection.azure_rm_subnet:
-       resource_group: "{{Resource_group_name}}"
-       name : "{{subnet}}"
-       address_prefixes: "{{address_prefixes_subnet}}"
-       virtual_network: "{{vnet_name}}"
+        resource_group: "{{ item.name }}"
+        name: "{{ item.subnet }}"
+        address_prefixes: "{{ item.address_prefixes_subnet }}"
+        virtual_network: "{{ item.vnet_name }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
-
 
     - name: Create public IP
       azure.azcollection.azure_rm_publicipaddress:
-        resource_group: "{{ Resource_group_name }}"
-        location: "{{ Location }}"
-        name: "{{Ip_name}}"
+        resource_group: "{{ item.name }}"
+        location: "{{ item.location }}"
+        name: "{{ item.Ip_name }}"
         allocation_method: Static
         sku: Standard
       environment:
@@ -52,40 +58,40 @@
 
     - name: Create NIC
       azure.azcollection.azure_rm_networkinterface:
-        resource_group: "{{ Resource_group_name }}"
-        name: "{{NIC_name}}"
-        location : "{{Location}}"
-        virtual_network: "{{vnet_name}}"
-        subnet: "{{subnet}}"
+        resource_group: "{{ item.name }}"
+        name: "{{ item.NIC_name }}"
+        location: "{{ item.location }}"
+        virtual_network: "{{ item.vnet_name }}"
+        subnet: "{{ item.subnet }}"
         ip_configurations:
           - name: ipconfig1
-            public_ip_address_name: "{{Ip_name}}"
+            public_ip_address_name: "{{ item.Ip_name }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"           
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
     - name: Create an SSH key pair
       ansible.builtin.openssh_keypair:
-        path: ~/.ssh/azure_vm_key  
-        type: rsa                  
-        size: 4096                 
+        path: "~/.ssh/{{ item.vm_name }}_key"
+        type: rsa
+        size: 4096
       register: ssh_key_result
 
-    - name: Create vm
+    - name: Create VM
       azure.azcollection.azure_rm_virtualmachine:
-        resource_group: "{{ Resource_group_name }}"
-        location: "{{ Location }}"
-        name: "{{ vm_name }}"
-        vm_size: "{{ vm_size }}"
-        admin_username: "{{ admin_username }}"
+        resource_group: "{{ item.name }}"
+        location: "{{ item.location }}"
+        name: "{{ item.vm_name }}"
+        vm_size: "{{ item.vm_size }}"
+        admin_username: "{{ item.admin_username }}"
         ssh_password_enabled: false
         ssh_public_keys:
-          - path: /home/{{ admin_username }}/.ssh/authorized_keys
-            key_data: "{{ ssh_key_result.public_key | string}}"
+          - path: "/home/{{ item.admin_username }}/.ssh/authorized_keys"
+            key_data: "{{ ssh_key_result.public_key | string }}"
         network_interface_names:
-          - "{{ NIC_name }}"
+          - "{{ item.NIC_name }}"
         image:
           publisher: Canonical
           offer: 0001-com-ubuntu-server-jammy
@@ -100,36 +106,33 @@
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
-
     - name: Create storage account
       azure_rm_storageaccount:
-        resource_group: "{{Resource_group_name}}"
-        name: "{{storage}}"
+        resource_group: "{{ item.name }}"
+        name: "{{ item.storage }}"
         type: Standard_LRS
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
-   
     - name: Create Workspace
       azure.azcollection.azure_rm_loganalyticsworkspace:
-        resource_group: "{{Resource_group_name}}"
-        name: M-Workspace
-        location: "{{ Location }}"
+        resource_group: "{{ item.name }}"
+        name: "M-Workspace"
+        location: "{{ item.location }}"
         sku: per_gb2018
         state: present
-      register: workspace
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
-        name: "{{ Resource_group_name  }}"
+        name: "{{ item.name }}"
       register: rg_info
       tags: fetch_rg
       environment:
@@ -138,13 +141,10 @@
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
-    - name: Set RG name variable
-      set_fact:
-        my_rg_name: "{{ rg_info.resourcegroups[0].name }}"
-      tags: fetch_rg
-
     - name: Write RG name to file for pipeline
       copy:
-        content: "{{ my_rg_name }}"
-        dest: /tmp/resource_group_name.txt
+        content: "{{ item.name }}"
+        dest: "/tmp/{{ item.name }}_rg.txt"
       tags: fetch_rg
+
+  loop: "{{ resource_groups_list }}"
