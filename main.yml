@@ -41,25 +41,25 @@
       set_fact:
         resource_groups_list: []
 
-    # Step 2: Build resource_groups_list dynamically
     - name: Build resource_groups_list for each sandbox
-      set_fact:
-        resource_groups_list: "{{ resource_groups_list + [ item_dict ] }}"
-      vars:
-        item_dict:
-          name: "{{ base_rg_name }}-{{ item }}"
-          location: "{{ location }}"
-          vnet_name: "sandbox-vnet-{{ item }}"
-          subnet: "subnet{{ item }}"
-          address_prefixes_vnet: "10.{{ (item | int - 1) }}.0.0/16"
-          address_prefixes_subnet: "10.{{ (item | int - 1) }}.0.0/24"
-          NIC_name: "nic{{ item }}"
-          Ip_name: "ip{{ item }}"
-          vm_name: "vm{{ item }}"
-          vm_size: "Standard_B1s"
-          admin_username: "azureuser"
-          storage: "stg{{ item }}"
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+  set_fact:
+    resource_groups_list: "{{ resource_groups_list + [ item_dict ] }}"
+    vars:
+      item_dict:
+        name: "{{ base_rg_name }}-{{ item | string }}"
+        location: "{{ location }}"
+        vnet_name: "sandbox-vnet-{{ item | string }}"
+        subnet: "subnet{{ item | string }}"
+        address_prefixes_vnet: "10.{{ (item | int - 1) | string }}.0.0/16"
+        address_prefixes_subnet: "10.{{ (item | int - 1) | string }}.0.0/24"
+        NIC_name: "nic{{ item | string }}"
+        Ip_name: "ip{{ item | string }}"
+        vm_name: "vm{{ item | string }}"
+        vm_size: "Standard_B1s"
+        admin_username: "azureuser"
+        storage: "stg{{ item | string }}"
+  loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+
 
     # Step 3: Loop over the list and create resources
     - name: Create resources for each sandbox
