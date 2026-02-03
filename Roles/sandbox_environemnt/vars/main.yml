@@ -21,10 +21,7 @@
 # nsg : nsg-sandbox
 
 
-- name: Build resource_groups_list for each sandbox
-  set_fact:
-    resource_groups_list: "{{ resource_groups_list | default([]) + [ item_dict ] }}"
-  vars:
+vars:
     idx: "{{ item }}"
     item_dict:
       name: "{{ base_rg_name }}-{{ idx }}"
@@ -39,4 +36,3 @@
       vm_size: "Standard_B1s"
       admin_username: "azureuser"
       storage: "stg{{ idx }}"
-  loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
