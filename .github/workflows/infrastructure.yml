@@ -49,7 +49,7 @@ jobs:
       - name: Capture Resource Group Name
         id: resource_group
         run: |
-          RG_NAME=$(grep 'resource_group:' playbook_output.txt | awk '{print $2}')
+          RG_NAME=$(grep 'resource_group:' vars/main.yml | awk '{print $2}')
           echo "RESOURCE_GROUP=${RG_NAME}" >> $GITHUB_ENV
 
       - name: Run Ansible Playbook in Drift Detection Mode
