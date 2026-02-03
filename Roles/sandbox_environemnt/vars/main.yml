@@ -21,18 +21,22 @@
 # nsg : nsg-sandbox
 
 
-vars:
+- name: Build resource_groups_list for each sandbox
+  set_fact:
+    resource_groups_list: "{{ resource_groups_list | default([]) + [ item_dict ] }}"
+  vars:
     idx: "{{ item }}"
     item_dict:
       name: "{{ base_rg_name }}-{{ idx }}"
       location: "{{ location }}"
       vnet_name: "sandbox-vnet-{{ idx }}"
       subnet: "subnet{{ idx }}"
-      address_prefixes_vnet: "10.{{ idx | int - 1 }}.0.0/16"
-      address_prefixes_subnet: "10.{{ idx | int - 1 }}.0.0/24"
+      address_prefixes_vnet: "10.{{ (idx | int - 1) | string }}.0.0/16"
+      address_prefixes_subnet: "10.{{ (idx | int - 1) | string }}.0.0/24"
       NIC_name: "nic{{ idx }}"
       Ip_name: "ip{{ idx }}"
       vm_name: "vm{{ idx }}"
       vm_size: "Standard_B1s"
       admin_username: "azureuser"
       storage: "stg{{ idx }}"
+  loop: "{{ range(1, number_of_sandboxes + 1) | list }}"

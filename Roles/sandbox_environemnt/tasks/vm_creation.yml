@@ -3,11 +3,11 @@
         set_fact:
           resource_groups_list: []
 
-      - name: Build resource_groups_list for each sandbox
-        set_fact:
-          resource_groups_list: "{{ resource_groups_list + [ item_dict ] }}"
+      # - name: Build resource_groups_list for each sandbox
+      #   set_fact:
+      #     resource_groups_list: "{{ resource_groups_list + [ item_dict ] }}"
   
-        loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      #   loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
 
 
       - name: Create Resource Group
