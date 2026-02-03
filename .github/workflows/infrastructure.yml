@@ -116,11 +116,11 @@ jobs:
           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
-      # - name: Run Ansible Playbook to fetch RG
-      #   run: |
-      #     ansible-playbook main.yml \
-      #       -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-      #       --tags fetch_rg
+      - name: Run Ansible Playbook to fetch RG
+        run: |
+          ansible-playbook main.yml \
+            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+            --tags fetch_rg
 
       - name: Capture Resource Group Name from Ansible
         id: resource_group
