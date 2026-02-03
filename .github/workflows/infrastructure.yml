@@ -46,11 +46,22 @@ jobs:
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
             -e "resource_group_name=MyResourceGroup"  # Optional: if dynamic, update playbook to output it
 
-      - name: Capture Resource Group Name
+      # - name: Capture Resource Group Name
+      #   id: resource_group
+      #   run: |
+      #     RG_NAME=$(grep 'resource_group:' Roles/sandbox_environment/tasks/vm_creation.yml | awk '{print $2}')
+      #     echo "RESOURCE_GROUP=${RG_NAME}" >> $GITHUB_ENV
+    
+      - name : fetch Resource Group Name
         id: resource_group
         run: |
-          RG_NAME=$(grep 'resource_group:' Roles/sandbox_environment/tasks/vm_creation.yml | awk '{print $2}')
+          RG_NAME=$(ansible-inventory --list | jq -r '._meta.hostvars[] | select(.resource_group_name != null) | .resource_group_name' | head -n 1)
           echo "RESOURCE_GROUP=${RG_NAME}" >> $GITHUB_ENV
+
+      - name :  Display Resource Group Name
+        run: |
+          echo "Resource Group Name is: ${RESOURCE_GROUP}"
+      
 
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
