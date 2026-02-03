@@ -129,7 +129,7 @@
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
-        name: "{{ resource_group_name }}"
+        name: "{{ Resource_group_name  }}"
       register: rg_info
       tags: fetch_rg
       environment:
