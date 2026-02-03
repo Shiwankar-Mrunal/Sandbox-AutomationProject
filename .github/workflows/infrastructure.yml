@@ -1,14 +1,10 @@
-
-
-
-  
-      
+     
 name: Sandbox environment automation
 
 on:
   push: 
     branches: 
-      - main
+      - v2_slack
   pull_request:
     branches: 
       - main
