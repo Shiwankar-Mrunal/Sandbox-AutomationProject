@@ -104,9 +104,9 @@ jobs:
             [ -z "$RG_VALUE" ] && break
 
             if [ "$DRIFT_DETECTED" = "true" ]; then
-              MESSAGE="🚨 Drift detected while sandbox creation for Resource Group: ${RG_VALUE}. Please check the pipeline run."
+              MESSAGE=" Drift detected while sandbox creation for Resource Group: ${RG_VALUE}. Please check the pipeline run."
             else
-              MESSAGE="✅ Sandbox environment for Resource Group: ${RG_VALUE} is created. No drift detected."
+              MESSAGE=" Sandbox environment for Resource Group: ${RG_VALUE} is created. No drift detected."
             fi
 
             curl -X POST \
