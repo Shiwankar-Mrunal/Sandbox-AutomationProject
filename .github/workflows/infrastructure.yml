@@ -47,11 +47,10 @@ jobs:
             --tags fetch_rg
 
       
-      - name: Run Ansible Playbook to fetch RG
-        run: |
-          ansible-playbook main.yml \
-            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            --tags fetch_rg
+      - name: Run Ansible Playbook
+        run: ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" -e "number_of_sandboxes=3" -e "base_rg_name=sandbox-rg" --tags fetch_rg
+
+
 
       - name: Capture Resource Group Name from Ansible
         id: resource_group
