@@ -25,6 +25,7 @@ environments:
     admin_username: azureuser
     Ip_name: PublicIP-Sandbox
     NIC_name: NIC-sandbox
+    ssh_public_key : 2HBzlIidEILJDMorAXpePkbtqB+KwoIVUZVeaejge4Y
     storage: sandboxstorage78
     nsg: nsg-sandbox
 
@@ -39,5 +40,6 @@ environments:
     admin_username: azureuser
     Ip_name: PublicIP-Prod
     NIC_name: NIC-prod
+    ssh_public_key : 2HBzlIidEILJDMorAXpePkbtqB+KwoIVUZVeaejge4Y
     storage: prodstorage78
     nsg: nsg-prod
