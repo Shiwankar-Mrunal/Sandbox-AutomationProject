@@ -176,7 +176,7 @@
           {{
             rg_infos.results | map(attribute='resourcegroups') | flatten | map(attribute='name')| list
           }}
-        tags: fetch_rg
+      tags: fetch_rg
 
     - name: Write all RG names to file for pipeline
       copy:
