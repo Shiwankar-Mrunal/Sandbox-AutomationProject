@@ -63,10 +63,16 @@ jobs:
       - name: Display Resource Group Names
         run: |
           i=1
-          while [ -n "${!RESOURCE_GROUP_$i}" ]; do
-            echo "RG $i: ${!RESOURCE_GROUP_$i}"
+          while true; do
+            VAR_NAME="RESOURCE_GROUP_$i"
+            RG_VALUE="${!VAR_NAME}"
+            if [ -z "$RG_VALUE" ]; then
+              break
+            fi
+            echo "RG $i: $RG_VALUE"
             i=$((i + 1))
           done
+        shell: bash
 
 
       - name: Run Ansible Playbook in Drift Detection Mode
