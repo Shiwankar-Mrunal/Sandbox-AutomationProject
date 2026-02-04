@@ -56,11 +56,18 @@ jobs:
           done < /tmp/resource_group_names.txt
 
 
-      - name: Display Resource Group Name
+      
+        # run: |
+        #   echo "Resource Group 1: ${RESOURCE_GROUP_1}"
+        #   echo "Resource Group 2: ${RESOURCE_GROUP_2}"
+      - name: Display Resource Group Names
         run: |
-          echo "Resource Group 1: ${RESOURCE_GROUP_1}"
-          echo "Resource Group 2: ${RESOURCE_GROUP_2}"
-          
+          i=1
+          while [ -n "${!RESOURCE_GROUP_$i}" ]; do
+            echo "RG $i: ${!RESOURCE_GROUP_$i}"
+            i=$((i + 1))
+          done
+
 
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
