@@ -8,6 +8,7 @@ on:
     branches: 
       - main
     types: [opened, synchronize, reopened]
+    
 
 jobs:
   provision_sandbox:
@@ -45,22 +46,39 @@ jobs:
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
 
+      - name: Debug resource group file
+        run: |
+          echo "=== File content ==="
+          cat /tmp/resource_group_names.txt
+          echo "===================="
+        shell: bash
 
-      - name: Capture Resource Group Names from Ansible
-        id: resource_group
+
+
+      - name: Set all resource groups as environment variables
         run: |
           i=1
-          while read rg; do
-            echo "RESOURCE_GROUP_$i=$rg" >> $GITHUB_ENV
+          while IFS= read -r rg || [ -n "$rg" ]; do
+            echo "RESOURCE_GROUP_$i=$rg" >> "$GITHUB_ENV"
             i=$((i+1))
           done < /tmp/resource_group_names.txt
+        shell: bash
 
 
-      - name: Display Resource Group Name
+      - name: Display Resource Group Names
         run: |
-          echo "Resource Group 1: ${RESOURCE_GROUP_1}"
-          echo "Resource Group 2: ${RESOURCE_GROUP_2}"
-          
+          i=1
+          while true; do
+            VAR_NAME="RESOURCE_GROUP_$i"
+            RG_VALUE="${!VAR_NAME}"
+            if [ -z "$RG_VALUE" ]; then
+              break
+            fi
+            echo "RG $i: $RG_VALUE"
+            i=$((i + 1))
+          done
+        shell: bash
+
 
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
@@ -76,14 +94,27 @@ jobs:
             echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
           fi
 
-      - name: Notify Slack
+      - name: Send Slack notification for sandbox creation
         run: |
-          if [ "${DRIFT_DETECTED}" = "true" ]; then
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Drift detected while sandbox creation for Resource Group: '"${RESOURCE_GROUP}"'. Please check the pipeline run."}' \
-              "${{ secrets.SLACK_WEBHOOK_URL }}"
-          else
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Sandbox environment for Resource Group: '"${RESOURCE_GROUP}"' is created. No drift detected."}' \
-              "${{ secrets.SLACK_WEBHOOK_URL }}"
-          fi
+          i=1
+          while true; do
+            VAR_NAME="RESOURCE_GROUP_$i"
+            RG_VALUE="${!VAR_NAME}"
+
+            [ -z "$RG_VALUE" ] && break
+
+            if [ "$DRIFT_DETECTED" = "true" ]; then
+              MESSAGE=" Drift detected while sandbox creation for Resource Group: ${RG_VALUE}. Please check the pipeline run."
+            else
+              MESSAGE=" Sandbox environment for Resource Group: ${RG_VALUE} is created. No drift detected."
+            fi
+
+            curl -X POST \
+              -H "Content-type: application/json" \
+              --data "{\"text\":\"${MESSAGE}\"}" \
+              "$SLACK_WEBHOOK_URL"
+
+            i=$((i + 1))
+          done
+        shell: bash
+
