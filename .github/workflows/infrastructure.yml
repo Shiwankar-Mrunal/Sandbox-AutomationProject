@@ -58,8 +58,9 @@ jobs:
 
       - name: Display Resource Group Name
         run: |
-          echo " Resource Group Name: ${RESOURCE_GROUP}"
-   
+          echo "Resource Group 1: ${RESOURCE_GROUP_1}"
+          echo "Resource Group 2: ${RESOURCE_GROUP_2}"
+          
 
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
