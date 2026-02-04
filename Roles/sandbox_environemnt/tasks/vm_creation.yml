@@ -172,9 +172,11 @@
 
     - name: Set RG names variable
       set_fact:
-       my_rg_names: "{{ rg_infos.results | map(attribute='resourcegroups[0].name') | list }}"
-      tags: fetch_rg
-
+        my_rg_names: >-
+          {{
+            rg_infos.results | map(attribute='resourcegroups') | flatten | map(attribute='name')| list
+          }}
+        tags: fetch_rg
 
     - name: Write all RG names to file for pipeline
       copy:
