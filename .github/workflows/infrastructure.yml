@@ -44,19 +44,10 @@ jobs:
           ansible-playbook main.yml \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
-            --tags fetch_rg
 
-      
+
       # - name: Run Ansible Playbook
-      #   run: ansible-playbook main.yml \
-      #     -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-      #     -e "number_of_sandboxes=2" \
-      #     -e "base_rg_name=sandbox-rg" \
-      #     --tags fetch_rg
-
-
-      - name: Run Ansible Playbook
-        run: ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python"
+      #   run: ansible-playbook main.yml -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python"
 
 
       - name: Capture Resource Group Name from Ansible
