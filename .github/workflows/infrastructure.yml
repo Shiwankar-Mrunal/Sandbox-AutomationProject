@@ -54,16 +54,6 @@ jobs:
 
 
 
-      # - name: Set all resource groups as environment variables
-      #   run: |
-      #     i=1
-      #     while read rg; do
-      #       echo "RESOURCE_GROUP_$i=$rg" >> $GITHUB_ENV
-      #       i=$((i+1))
-      #     done < /tmp/resource_group_names.txt
-      #   shell: bash
-
-
       - name: Set all resource groups as environment variables
         run: |
           i=1
@@ -103,14 +93,27 @@ jobs:
             echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
           fi
 
-      - name: Notify Slack
+      - name: Send Slack notification for sandbox creation
         run: |
-          if [ "${DRIFT_DETECTED}" = "true" ]; then
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Drift detected while sandbox creation for Resource Group: '"${RESOURCE_GROUP}"'. Please check the pipeline run."}' \
-              "${{ secrets.SLACK_WEBHOOK_URL }}"
-          else
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Sandbox environment for Resource Group: '"${RESOURCE_GROUP}"' is created. No drift detected."}' \
-              "${{ secrets.SLACK_WEBHOOK_URL }}"
-          fi
+          i=1
+          while true; do
+            VAR_NAME="RESOURCE_GROUP_$i"
+            RG_VALUE="${!VAR_NAME}"
+
+            [ -z "$RG_VALUE" ] && break
+
+            if [ "$DRIFT_DETECTED" = "true" ]; then
+              MESSAGE="🚨 Drift detected while sandbox creation for Resource Group: ${RG_VALUE}. Please check the pipeline run."
+            else
+              MESSAGE="✅ Sandbox environment for Resource Group: ${RG_VALUE} is created. No drift detected."
+            fi
+
+            curl -X POST \
+              -H "Content-type: application/json" \
+              --data "{\"text\":\"${MESSAGE}\"}" \
+              "$SLACK_WEBHOOK_URL"
+
+            i=$((i + 1))
+          done
+        shell: bash
+
