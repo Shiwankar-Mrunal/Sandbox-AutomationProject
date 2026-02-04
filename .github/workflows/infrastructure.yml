@@ -46,20 +46,15 @@ jobs:
             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
 
 
-      - name: Capture Resource Group Names from Ansible
-        id: resource_group
+      - name: Set all resource groups as environment variables
         run: |
           i=1
           while read rg; do
             echo "RESOURCE_GROUP_$i=$rg" >> $GITHUB_ENV
             i=$((i+1))
           done < /tmp/resource_group_names.txt
+        shell: bash
 
-
-      
-        # run: |
-        #   echo "Resource Group 1: ${RESOURCE_GROUP_1}"
-        #   echo "Resource Group 2: ${RESOURCE_GROUP_2}"
       - name: Display Resource Group Names
         run: |
           i=1
