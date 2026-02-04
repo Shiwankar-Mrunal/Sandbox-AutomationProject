@@ -182,4 +182,4 @@
       copy:
         content: "{{ my_rg_names | join('\n') }}"
         dest: /tmp/resource_group_names.txt
-      tags: fetch_rg
+
