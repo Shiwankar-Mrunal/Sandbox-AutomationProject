@@ -16,6 +16,7 @@
 environments:
   - Resource_group_name: M-Testing_environment
     Location: westeurope
+    workspace_name: sandbox-test
     vnet_name: sandbox_vnet
     address_prefixes_vnet: ["10.0.0.0/16"]
     subnet: sandbox_subnet
@@ -31,6 +32,7 @@ environments:
 
   - Resource_group_name: M-Prod_environment
     Location: northeurope
+    workspace_name: sandbox-prod
     vnet_name: prod_vnet
     address_prefixes_vnet: ["10.1.0.0/16"]
     subnet: prod_subnet
