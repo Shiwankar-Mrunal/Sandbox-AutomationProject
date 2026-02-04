@@ -165,11 +165,6 @@
         label: "{{ item.Resource_group_name }}"
 
 
-    # - name: Set RG name variable
-    #   set_fact:
-    #     my_rg_name: "{{ rg_info.resourcegroups[0].name }}"
-    #   tags: fetch_rg
-
     - name: Set RG names variable
       set_fact:
         my_rg_names: >-
