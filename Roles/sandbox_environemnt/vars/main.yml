@@ -13,7 +13,7 @@
 # storage : sandboxstorage78
 # nsg : nsg-sandbox
 
-azure_resources:
+environments:
   - Resource_group_name: M-Testing_environment
     Location: westeurope
     vnet_name: sandbox_vnet
