@@ -1,11 +1,11 @@
-#
 - name : Infrastructure vm_creation
   block:
 
     - name: Create Resource Group
       azure.azcollection.azure_rm_resourcegroup:
-        name : "{{Resource_group_name}}"
-        location : "{{Location}}"
+        name: "{{ item.Resource_group_name }}"
+        location: "{{ item.Location }}"
+      loop: "{{ environments }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
@@ -13,23 +13,26 @@
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
         
-    - name : Create virtual network
-      azure.azcollection.azure_rm_virtualnetwork : 
-        resource_group: "{{Resource_group_name}}"
-        name: "{{vnet_name}}"
-        address_prefixes: "{{address_prefixes_vnet}}"
+    - name: Create virtual networks
+      azure.azcollection.azure_rm_virtualnetwork:
+        resource_group: "{{ item.Resource_group_name }}"
+        name: "{{ item.vnet_name }}"
+        address_prefixes: "{{ item.address_prefixes_vnet }}"
+      loop: "{{ environments }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
-    - name : Add subnet
+
+    - name: Add subnets
       azure.azcollection.azure_rm_subnet:
-       resource_group: "{{Resource_group_name}}"
-       name : "{{subnet}}"
-       address_prefixes: "{{address_prefixes_subnet}}"
-       virtual_network: "{{vnet_name}}"
+        resource_group: "{{ item.Resource_group_name }}"
+        virtual_network: "{{ item.vnet_name }}"
+        name: "{{ item.subnet }}"
+        address_prefixes: "{{ item.address_prefixes_subnet }}"
+      loop: "{{ environments }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
@@ -37,55 +40,63 @@
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
 
-    - name: Create public IP
+
+    - name: Create public IPs
       azure.azcollection.azure_rm_publicipaddress:
-        resource_group: "{{ Resource_group_name }}"
-        location: "{{ Location }}"
-        name: "{{Ip_name}}"
+        resource_group: "{{ item.Resource_group_name }}"
+        location: "{{ item.Location }}"
+        name: "{{ item.Ip_name }}"
         allocation_method: Static
         sku: Standard
+      loop: "{{ environments }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 
-    - name: Create NIC
+
+    - name: Create NICs
       azure.azcollection.azure_rm_networkinterface:
-        resource_group: "{{ Resource_group_name }}"
-        name: "{{NIC_name}}"
-        location : "{{Location}}"
-        virtual_network: "{{vnet_name}}"
-        subnet: "{{subnet}}"
+        resource_group: "{{ item.Resource_group_name }}"
+        name: "{{ item.NIC_name }}"
+        location: "{{ item.Location }}"
+        virtual_network: "{{ item.vnet_name }}"
+        subnet: "{{ item.subnet }}"
         ip_configurations:
           - name: ipconfig1
-            public_ip_address_name: "{{Ip_name}}"
+            public_ip_address_name: "{{ item.Ip_name }}"
+      loop: "{{ environments }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"           
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+          
 
-    - name: Create an SSH key pair
+    - name: Create SSH key pair per environment
       ansible.builtin.openssh_keypair:
-        path: ~/.ssh/azure_vm_key  
-        type: rsa                  
-        size: 4096                 
-      register: ssh_key_result
+        path: "~/.ssh/azure_vm_key_{{ item.Resource_group_name }}"
+        type: rsa
+        size: 4096
+      loop: "{{ environments }}"
+      loop_control:
+        label: "{{ item.Resource_group_name }}"
+      register: ssh_keys
 
-    - name: Create vm
+    - name: Create VMs
       azure.azcollection.azure_rm_virtualmachine:
-        resource_group: "{{ Resource_group_name }}"
-        location: "{{ Location }}"
-        name: "{{ vm_name }}"
-        vm_size: "{{ vm_size }}"
-        admin_username: "{{ admin_username }}"
+        resource_group: "{{ item.Resource_group_name }}"
+        location: "{{ item.Location }}"
+        name: "{{ item.vm_name }}"
+        vm_size: "{{ item.vm_size }}"
+        admin_username: "{{ item.admin_username }}"
         ssh_password_enabled: false
         ssh_public_keys:
-          - path: /home/{{ admin_username }}/.ssh/authorized_keys
-            key_data: "{{ ssh_key_result.public_key | string}}"
+          - path: /home/{{ item.admin_username }}/.ssh/authorized_keys
+            key_data: "{{ item.ssh_public_key }}"
         network_interface_names:
-          - "{{ NIC_name }}"
+          - "{{ item.NIC_name }}"
         image:
           publisher: Canonical
           offer: 0001-com-ubuntu-server-jammy
@@ -94,57 +105,81 @@
         vm_identity:
           type: SystemAssigned
         managed_disk_type: Standard_LRS
+      loop: "{{ environments }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+      loop_control:
+        label: "{{ item.Resource_group_name }} / {{ item.vm_name }}"
 
 
-    - name: Create storage account
+
+    - name: Create storage accounts
       azure_rm_storageaccount:
-        resource_group: "{{Resource_group_name}}"
-        name: "{{storage}}"
+        resource_group: "{{ item.Resource_group_name }}"
+        name: "{{ item.storage }}"
         type: Standard_LRS
+      loop: "{{ environments }}"
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+      loop_control:
+        label: "{{ item.Resource_group_name }} / {{ item.storage }}"
+
 
    
-    - name: Create Workspace
+    - name: Create Log Analytics Workspaces
       azure.azcollection.azure_rm_loganalyticsworkspace:
-        resource_group: "{{Resource_group_name}}"
-        name: M-Workspace
-        location: "{{ Location }}"
+        resource_group: "{{ item.Resource_group_name }}"
+        name: "{{ item.workspace_name }}"
+        location: "{{ item.Location }}"
         sku: per_gb2018
         state: present
-      register: workspace
+      loop: "{{ environments }}"
+      register: workspaces
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}" 
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+      loop_control:
+        label: "{{ item.Resource_group_name }} / {{ item.workspace_name }}"
+
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
-        name: "{{ Resource_group_name  }}"
-      register: rg_info
+        name: "{{ item.Resource_group_name }}"
+      loop: "{{ environments }}"
+      register: rg_infos
       tags: fetch_rg
       environment:
         AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
         AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
         AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
         AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+      loop_control:
+        label: "{{ item.Resource_group_name }}"
 
-    - name: Set RG name variable
+
+    # - name: Set RG name variable
+    #   set_fact:
+    #     my_rg_name: "{{ rg_info.resourcegroups[0].name }}"
+    #   tags: fetch_rg
+
+    - name: Set RG names variable
       set_fact:
-        my_rg_name: "{{ rg_info.resourcegroups[0].name }}"
+        my_rg_names: >-
+          {{
+            rg_infos.results | map(attribute='resourcegroups') | flatten | map(attribute='name')| list
+          }}
       tags: fetch_rg
 
-    - name: Write RG name to file for pipeline
+    - name: Write all RG names to file for pipeline
       copy:
-        content: "{{ my_rg_name }}"
-        dest: /tmp/resource_group_name.txt
-      tags: fetch_rg
+        content: "{{ my_rg_names | join('\n') }}"
+        dest: /tmp/resource_group_names.txt
+
