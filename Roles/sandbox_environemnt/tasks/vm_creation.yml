@@ -94,7 +94,7 @@
         ssh_password_enabled: false
         ssh_public_keys:
           - path: /home/{{ item.admin_username }}/.ssh/authorized_keys
-            key_data: "{{ ssh_key_result.public_key | string }}"
+            key_data: "{{ item.ssh_public_key }}"
         network_interface_names:
           - "{{ item.NIC_name }}"
         image:
