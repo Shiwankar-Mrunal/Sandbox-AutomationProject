@@ -9,10 +9,29 @@ on:
       - main
     types: [opened, synchronize, reopened]
 
+
 jobs:
+  lint:
+    name: Lint GitHub Actions workflow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install actionlint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash
+          sudo mv actionlint /usr/local/bin/actionlint
+
+      - name: Run actionlint
+        run: actionlint
+
+
   provision_sandbox:
     name: Provision Sandbox
     runs-on: ubuntu-latest
+    needs: lint
 
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
