@@ -45,15 +45,34 @@ jobs:
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
 
+      - name: Debug resource group file
+        run: |
+          echo "=== File content ==="
+          cat /tmp/resource_group_names.txt
+          echo "===================="
+        shell: bash
+
+
+
+      # - name: Set all resource groups as environment variables
+      #   run: |
+      #     i=1
+      #     while read rg; do
+      #       echo "RESOURCE_GROUP_$i=$rg" >> $GITHUB_ENV
+      #       i=$((i+1))
+      #     done < /tmp/resource_group_names.txt
+      #   shell: bash
+
 
       - name: Set all resource groups as environment variables
         run: |
           i=1
-          while read rg; do
-            echo "RESOURCE_GROUP_$i=$rg" >> $GITHUB_ENV
+          while IFS= read -r rg || [ -n "$rg" ]; do
+            echo "RESOURCE_GROUP_$i=$rg" >> "$GITHUB_ENV"
             i=$((i+1))
           done < /tmp/resource_group_names.txt
         shell: bash
+
 
       - name: Display Resource Group Names
         run: |
