@@ -13,22 +13,22 @@
   set_fact:
     now_epoch: "{{ ansible_date_time.epoch | int }}"
 
+- name: Initialize expired RG list
+  set_fact:
+    expired_rgs: []
+
 - name: Identify expired resource groups
   set_fact:
-    expired_rgs: >-
-      {{
-        rg_info.resourcegroups
-        | selectattr('tags', 'defined')
-        | selectattr('tags[ttl_hours_tag]', 'defined')
-        | selectattr('tags[created_at_tag]', 'defined')
-        | rejectattr('tags[ttl_protected_tag]', 'defined')
-        | selectattr(
-            'tags[created_at_tag]',
-            'lt',
-            (now_epoch - (item.tags[ttl_hours_tag] | int * 3600))
-          )
-        | list
-      }}
+    expired_rgs: "{{ expired_rgs + [item] }}"
+  loop: "{{ rg_info.resourcegroups }}"
+  when:
+    - item.tags is defined
+    - item.tags.ttl_minutes is defined
+    - item.tags.created_at is defined
+    - item.tags.ttl_protected is not defined
+    - (now_epoch | int) >
+      ((item.tags.created_at | int) + (item.tags.ttl_minutes | int * 60))
+
 
 - name: Show expired resource groups (dry visibility)
   debug:
