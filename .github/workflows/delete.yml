@@ -1,0 +1,53 @@
+name: Azure RG TTL Cleanup
+
+on:
+  workflow_run:
+    workflows:
+      - Sandbox environment automation   # ✅ depends on first pipeline
+    types:
+      - completed
+
+  workflow_dispatch:
+
+  schedule:
+    - cron: "*/5 * * * *"  # optional fallback
+
+jobs:
+  delete_expired_rgs:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
+      AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Ansible & Azure collection
+        run: |
+          pip install ansible
+          ansible-galaxy collection install azure.azcollection --force
+          pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+
+      - name: Dry-run RG TTL cleanup
+        run: |
+          ansible-playbook playbooks/cleanup_expired_rgs.yml --check
+
+      - name: Delete expired RGs
+        run: |
+          ansible-playbook playbooks/cleanup_expired_rgs.yml \
+            -e enable_rg_cleanup=true
+

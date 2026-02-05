@@ -1,0 +1,10 @@
+
+# defaults file for delete_sandbox
+# roles/azure_rg_ttl_cleanup/defaults/main.yml
+
+enable_rg_cleanup: false
+
+# Tags used for TTL
+ttl_hours_tag: ttl_hours
+created_at_tag: created_at
+ttl_protected_tag: ttl_protected

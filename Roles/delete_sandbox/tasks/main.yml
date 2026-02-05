@@ -1,0 +1,4 @@
+- name : Deletion environment
+  import_tasks : deletion.yml
+
+        
