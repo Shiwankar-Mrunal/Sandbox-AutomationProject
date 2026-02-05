@@ -61,9 +61,12 @@ jobs:
       - name: Debug resource group file
         run: |
           echo "=== File content ==="
-          cat /tmp/resource_group_names.txt
+          if [ -f /tmp/resource_group_names.txt ]; then
+            cat /tmp/resource_group_names.txt
+          else
+            echo "File does not exist"
+          fi
           echo "===================="
-        shell: bash
 
       - name: Set all resource groups as environment variables
         run: |
