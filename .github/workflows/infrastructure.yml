@@ -3,7 +3,7 @@ name: Sandbox environment automation
 on:
   push: 
     branches: 
-            - artifact_branch  
+            - TTLEnvironment 
   pull_request:
     branches: 
       - main
