@@ -103,15 +103,6 @@ jobs:
             > ansible-artifacts/drift/drift-changes-only.log || true
 
 
-      - name: Upload drift detection artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ansible-drift-detection
-          path: ansible-artifacts/drift/
-
-
-
-
 #############################################################################
       - name: Debug resource group file
         run: |
@@ -147,20 +138,14 @@ jobs:
         shell: bash
 
 
-      # - name: Run Ansible Playbook in Drift Detection Mode
-      #   id: drift
-      #   run: |
-      #     set -e
-      #     ansible-playbook main.yml \
-      #       -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-      #       --check --diff > drift.log || true
 
-      #     if grep -q 'changed=' drift.log; then
-      #       echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
-      #     else
-      #       echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
-      #     fi
+      - name: Upload drift detection artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansible-drift-detection
+          path: ansible-artifacts/drift/
 
+          
       - name: Send Slack notification for sandbox creation
         run: |
           i=1
