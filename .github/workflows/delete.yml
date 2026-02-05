@@ -1,24 +1,12 @@
 name: Azure RG TTL Cleanup
 
 on:
-  workflow_run:
-    workflows:
-      - infrastructure.yml  # MUST match infra workflow name exactly
-    types:
-      - completed
-
-  workflow_dispatch:
-
   schedule:
-    - cron: "*/5 * * * *"   # optional safety net
+    - cron: "*/5 * * * *"   # runs every 5 minutes
+  workflow_dispatch:
 
 jobs:
   delete_expired_rgs:
-    if: >
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
-      github.event.workflow_run.conclusion == 'success'
-
     runs-on: ubuntu-latest
 
     env:

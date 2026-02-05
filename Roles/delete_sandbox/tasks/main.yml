@@ -1,0 +1,46 @@
+# roles/azure_rg_ttl_cleanup/tasks/main.yml
+
+- name: Stop if cleanup is not explicitly enabled
+  ansible.builtin.fail:
+    msg: "RG TTL cleanup is disabled. Set enable_rg_cleanup=true to proceed."
+  when: not enable_rg_cleanup | bool
+
+- name: Fetch all Azure resource groups
+  azure.azcollection.azure_rm_resourcegroup_info:
+  register: rg_info
+
+- name: Get current epoch time
+  set_fact:
+    now_epoch: "{{ ansible_date_time.epoch | int }}"
+
+- name: Identify expired resource groups
+  set_fact:
+    expired_rgs: >-
+      {{
+        rg_info.resourcegroups
+        | selectattr('tags', 'defined')
+        | selectattr('tags[ttl_hours_tag]', 'defined')
+        | selectattr('tags[created_at_tag]', 'defined')
+        | rejectattr('tags[ttl_protected_tag]', 'defined')
+        | selectattr(
+            'tags[created_at_tag]',
+            'lt',
+            (now_epoch - (item.tags[ttl_hours_tag] | int * 3600))
+          )
+        | list
+      }}
+
+- name: Show expired resource groups (dry visibility)
+  debug:
+    msg: "Expired RG detected: {{ item.name }}"
+  loop: "{{ expired_rgs }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Delete expired resource groups
+  azure.azcollection.azure_rm_resourcegroup:
+    name: "{{ item.name }}"
+    state: absent
+  loop: "{{ expired_rgs }}"
+  loop_control:
+    label: "{{ item.name }}"
