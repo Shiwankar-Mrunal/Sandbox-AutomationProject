@@ -3,14 +3,14 @@ name: Azure RG TTL Cleanup
 on:
   workflow_run:
     workflows:
-      - Sandbox environment automation   # ✅ EXACT MATCH
+      - Sandbox environment automation   # ✅ depends on first pipeline
     types:
       - completed
 
   workflow_dispatch:
 
   schedule:
-    - cron: "*/5 * * * *"   # optional fallback
+    - cron: "*/5 * * * *"  # optional fallback
 
 jobs:
   delete_expired_rgs:
@@ -50,3 +50,4 @@ jobs:
         run: |
           ansible-playbook playbooks/cleanup_expired_rgs.yml \
             -e enable_rg_cleanup=true
+

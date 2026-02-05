@@ -9,3 +9,7 @@
   roles:
     - sandbox_environemnt
     - delete_sandbox
+  tags:
+    environment: sandbox
+    created_at: "{{ ansible_date_time.epoch }}"
+    ttl_minutes: "{{ rg_ttl_minutes }}"

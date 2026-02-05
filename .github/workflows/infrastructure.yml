@@ -3,12 +3,11 @@ name: Sandbox environment automation
 on:
   push: 
     branches: 
-            - TTL
+      - TTL
   pull_request:
     branches: 
       - main
     types: [opened, synchronize, reopened]
-    
 
 jobs:
   provision_sandbox:
@@ -39,24 +38,25 @@ jobs:
           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
-# make directory for ansible pipeline artifacts
       - name: Prepare Ansible artifact directory
-        run: |
-          mkdir -p ansible-artifacts
-# Run Ansible Playbook for provisioning and save output to log file
+        run: mkdir -p ansible-artifacts
+
+      # -------------------------
+      # Run Ansible Playbook with TTL tags
+      # -------------------------
       - name: Run Ansible Playbook 
         run: |
           ansible-playbook main.yml \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg" \
+            -e "rg_ttl_minutes=10" \
             --diff | tee ansible-artifacts/provisioning-run.log
-# Upload atifacts for provisioning run
+
       - name: Upload Ansible run artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ansible-run-results
           path: ansible-artifacts/
-
 
       - name: Debug resource group file
         run: |
@@ -88,7 +88,6 @@ jobs:
           done
         shell: bash
 
-
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
         run: |
@@ -101,6 +100,7 @@ jobs:
           else
             echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
           fi
+
       - name: Send Slack notification for sandbox creation
         run: |
           i=1
@@ -120,3 +120,5 @@ jobs:
             i=$((i + 1))
           done
         shell: bash
+
+        
