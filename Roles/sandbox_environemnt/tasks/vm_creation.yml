@@ -1,34 +1,43 @@
-- name: Infrastructure vm_creation
-  block:
-
-    - name: Create Resource Group
+    - name: Create Resource Group with TTL
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ item.Resource_group_name }}"
         location: "{{ item.Location }}"
+        tags:
+          sandbox: "true"
+          TTL: "{{ (ansible_date_time.epoch | int + sandbox_ttl_seconds) | string }}"
       loop: "{{ environments }}"
 
-    - name: Create virtual networks
+    - name: Create Virtual Networks
       azure.azcollection.azure_rm_virtualnetwork:
         resource_group: "{{ item.Resource_group_name }}"
         name: "{{ item.vnet_name }}"
         address_prefixes: "{{ item.address_prefixes_vnet }}"
+        tags:
+          sandbox: "true"
+          TTL: "{{ (ansible_date_time.epoch | int + sandbox_ttl_seconds) | string }}"
       loop: "{{ environments }}"
 
-    - name: Add subnets
+    - name: Add Subnets
       azure.azcollection.azure_rm_subnet:
         resource_group: "{{ item.Resource_group_name }}"
         virtual_network: "{{ item.vnet_name }}"
         name: "{{ item.subnet }}"
         address_prefixes: "{{ item.address_prefixes_subnet }}"
+        tags:
+          sandbox: "true"
+          TTL: "{{ (ansible_date_time.epoch | int + sandbox_ttl_seconds) | string }}"
       loop: "{{ environments }}"
 
-    - name: Create public IPs
+    - name: Create Public IPs
       azure.azcollection.azure_rm_publicipaddress:
         resource_group: "{{ item.Resource_group_name }}"
         location: "{{ item.Location }}"
         name: "{{ item.Ip_name }}"
         allocation_method: Static
         sku: Standard
+        tags:
+          sandbox: "true"
+          TTL: "{{ (ansible_date_time.epoch | int + sandbox_ttl_seconds) | string }}"
       loop: "{{ environments }}"
 
     - name: Create NICs
@@ -41,6 +50,9 @@
         ip_configurations:
           - name: ipconfig1
             public_ip_address_name: "{{ item.Ip_name }}"
+        tags:
+          sandbox: "true"
+          TTL: "{{ (ansible_date_time.epoch | int + sandbox_ttl_seconds) | string }}"
       loop: "{{ environments }}"
 
     - name: Create SSH key pair per environment
@@ -74,49 +86,33 @@
         vm_identity:
           type: SystemAssigned
         managed_disk_type: Standard_LRS
+        tags:
+          sandbox: "true"
+          TTL: "{{ (ansible_date_time.epoch | int + sandbox_ttl_seconds) | string }}"
       loop: "{{ environments }}"
       loop_control:
         label: "{{ item.Resource_group_name }} / {{ item.vm_name }}"
 
-    - name: Create storage accounts
-      azure_rm_storageaccount:
+    - name: Create Storage Accounts
+      azure.azcollection.azure_rm_storageaccount:
         resource_group: "{{ item.Resource_group_name }}"
         name: "{{ item.storage }}"
         type: Standard_LRS
+        tags:
+          sandbox: "true"
+          TTL: "{{ (ansible_date_time.epoch | int + sandbox_ttl_seconds) | string }}"
       loop: "{{ environments }}"
       loop_control:
         label: "{{ item.Resource_group_name }} / {{ item.storage }}"
 
-    - name: Fetch resource group info
-      azure.azcollection.azure_rm_resourcegroup_info:
-        name: "{{ item.Resource_group_name }}"
-      loop: "{{ environments }}"
-      register: rg_infos
-      loop_control:
-        label: "{{ item.Resource_group_name }}"
-      tags: fetch_rg
-
-    - name: Set RG names variable
-      set_fact:
-        my_rg_names: >-
-          {{
-            rg_infos.results
-            | map(attribute='resourcegroups')
-            | flatten
-            | map(attribute='name')
-            | list
-          }}
-      tags: fetch_rg
-
     - name: Write all RG names to file for pipeline
       copy:
-        content: "{{ my_rg_names | join('\n') }}"
+        content: "{{ environments | map(attribute='Resource_group_name') | join('\n') }}"
         dest: /tmp/resource_group_names.txt
-      tags: fetch_rg
 
-  environment:
-    AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
-    AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
-    AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-    AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+      environment:
+        AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+        AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
+        AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+        AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
 

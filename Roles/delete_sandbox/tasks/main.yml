@@ -1,0 +1,5 @@
+---
+# tasks file for delete_sandbox
+- name :  Deleting Testing_environment
+  import_tasks : sandbox_deletion.yml
+  

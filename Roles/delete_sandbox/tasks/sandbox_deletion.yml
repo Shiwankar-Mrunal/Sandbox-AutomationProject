@@ -1,0 +1,34 @@
+    - name: Fetch all resource groups with sandbox tag
+      azure.azcollection.azure_rm_resourcegroup_info:
+      register: rg_info
+
+    - name: Filter expired sandboxes
+      set_fact:
+        expired_rgs: >-
+          {{
+            rg_info.resourcegroups
+            | selectattr('tags.sandbox', 'defined')
+            | selectattr('tags.TTL', 'defined')
+            | selectattr('tags.TTL', 'int', '<=', ansible_date_time.epoch | int)
+            | list
+          }}
+
+    - name: Debug expired RGs
+      debug:
+        msg: "Expired sandbox Resource Group: {{ item.name }}"
+      loop: "{{ expired_rgs }}"
+
+    - name: Delete expired Resource Groups
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{{ expired_rgs }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: delete_results
+
+    - name: Log deleted Resource Groups for GitHub Actions / Slack
+      debug:
+        msg: "DELETED Resource Group: {{ item.item.name }}"
+      loop: "{{ delete_results.results }}"
+      when: item.changed

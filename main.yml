@@ -5,5 +5,9 @@
   gather_facts: yes
   vars:
     ansible_python_interpreter: /opt/hostedtoolcache/Python/3.10.19/x64/bin/python
+    sandbox_ttl_seconds: 600  # 10 minutes
+
   roles:
     - sandbox_environemnt
+    - sandbox_cleanup
+
