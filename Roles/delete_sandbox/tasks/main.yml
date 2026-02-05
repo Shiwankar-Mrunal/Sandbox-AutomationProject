@@ -5,9 +5,9 @@
     msg: "RG TTL cleanup is disabled. Set enable_rg_cleanup=true to proceed."
   when: not enable_rg_cleanup | bool
 
-- name: Fetch all Azure resource groups
-  azure.azcollection.azure_rm_resourcegroup_info:
-  register: rg_info
+# - name: Fetch all Azure resource groups
+#   azure.azcollection.azure_rm_resourcegroup_info:
+#   register: rg_info
 
 - name: Get current epoch time
   set_fact:
