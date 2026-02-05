@@ -59,6 +59,8 @@ jobs:
 
       - name: Debug resource group file
         run: |
+          ansible-playbook main.yml \
+              -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" 
           echo "=== File content ==="
           cat /tmp/resource_group_names.txt
           echo "===================="
