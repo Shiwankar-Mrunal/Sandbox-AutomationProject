@@ -46,29 +46,73 @@ jobs:
       #       -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
       #       -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
 
+# this is working   
+
 # make directory for ansible pipeline artifacts
+#       - name: Prepare Ansible artifact directory
+#         run: |
+#           mkdir -p ansible-artifacts
+
+# # Run Ansible Playbook for provisioning and save output to log file
+#       - name: Run Ansible Playbook (Provisioning)
+#         run: |
+#           ansible-playbook main.yml \
+#             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+#             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg" \
+#             --diff | tee ansible-artifacts/provisioning-run.log
+
+# # Upload atifacts for provisioning run
+#       - name: Upload Ansible run artifacts
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: ansible-run-results
+#           path: ansible-artifacts/
+
+
+###############################################################################
+
+
       - name: Prepare Ansible artifact directory
         run: |
-          mkdir -p ansible-artifacts
+          mkdir -p ansible-artifacts/drift
 
-# Run Ansible Playbook for provisioning and save output to log file
-      - name: Run Ansible Playbook (Provisioning)
+      - name: Run Ansible Playbook in Drift Detection Mode
+        id: drift
+        shell: bash
         run: |
+          set -o pipefail
+
           ansible-playbook main.yml \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            -e "number_of_sandboxes=3 base_rg_name=sandbox-rg" \
-            --diff | tee ansible-artifacts/provisioning-run.log
+            --check --diff \
+            | tee ansible-artifacts/drift/drift-full.log || true
 
-# Upload atifacts for provisioning run
-      - name: Upload Ansible run artifacts
+          # Detect drift
+          if grep -E "changed=[1-9][0-9]*" ansible-artifacts/drift/drift-full.log; then
+            echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
+          else
+            echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
+          fi
+
+          # Extract only changed tasks + diffs for quick review
+          awk '
+            /^TASK \[/ { task=$0 }
+            /changed: \[|^diff:/ { print task; print; show=1 }
+            show && /^[[:space:]]/ { print }
+          ' ansible-artifacts/drift/drift-full.log \
+            > ansible-artifacts/drift/drift-changes-only.log || true
+
+
+      - name: Upload drift detection artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ansible-run-results
-          path: ansible-artifacts/
+          name: ansible-drift-detection
+          path: ansible-artifacts/drift/
 
 
 
 
+#############################################################################
       - name: Debug resource group file
         run: |
           echo "=== File content ==="
@@ -103,19 +147,19 @@ jobs:
         shell: bash
 
 
-      - name: Run Ansible Playbook in Drift Detection Mode
-        id: drift
-        run: |
-          set -e
-          ansible-playbook main.yml \
-            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            --check --diff > drift.log || true
+      # - name: Run Ansible Playbook in Drift Detection Mode
+      #   id: drift
+      #   run: |
+      #     set -e
+      #     ansible-playbook main.yml \
+      #       -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+      #       --check --diff > drift.log || true
 
-          if grep -q 'changed=' drift.log; then
-            echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
-          else
-            echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
-          fi
+      #     if grep -q 'changed=' drift.log; then
+      #       echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
+      #     else
+      #       echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
+      #     fi
 
       - name: Send Slack notification for sandbox creation
         run: |
