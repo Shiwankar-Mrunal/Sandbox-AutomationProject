@@ -1,17 +1,3 @@
-# Resource_group_name : M-Testing_environment
-# Location : West Europe
-# vnet_name : sandbox_vnet
-# address_prefixes_vnet : 10.0.0.0/16
-# subnet : sandbox_subnet
-# address_prefixes_subnet : 10.0.1.0/24
-# vm_name : Sandbox-vm 
-# vm_size : Standard_B1s
-# admin_username : azureuser
-# Ip_name : PublicIP-Sandbox
-# NIC_name : NIC-sandbox
-# # ssh_public_key : 2HBzlIidEILJDMorAXpePkbtqB+KwoIVUZVeaejge4Y
-# storage : sandboxstorage78
-# nsg : nsg-sandbox
 
 environments:
   - Resource_group_name: M-Testing_environment

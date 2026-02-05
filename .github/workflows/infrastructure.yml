@@ -1,182 +1,3 @@
-# name: Sandbox environment automation
-
-# on:
-#   push: 
-#     branches: 
-#             - artifact_branch  
-#   pull_request:
-#     branches: 
-#       - main
-#     types: [opened, synchronize, reopened]
-    
-
-# jobs:
-#   provision_sandbox:
-#     name: Provision Sandbox
-#     runs-on: ubuntu-latest
-
-#     env:
-#       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#       AZURE_SECRET: ${{ secrets.AZURE_SECRET }}
-#       AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
-#       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-#     steps: 
-#       - name: Checkout code
-#         uses: actions/checkout@v3
-
-#       - name: Set up Python
-#         uses: actions/setup-python@v4
-#         with: 
-#           python-version: '3.10'
-
-#       - name: Install Azure Ansible Collection
-#         run: |
-#           ansible-galaxy collection install azure.azcollection --force
-
-#       - name: Install Azure SDK dependencies for Ansible
-#         run: |
-#           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
-#           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
-
-#       # - name: Run Ansible Playbook
-#       #   run: |
-#       #     ansible-playbook main.yml \
-#       #       -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-#       #       -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
-
-# # this is working   
-
-# # make directory for ansible pipeline artifacts
-# #       - name: Prepare Ansible artifact directory
-# #         run: |
-# #           mkdir -p ansible-artifacts
-
-# # # Run Ansible Playbook for provisioning and save output to log file
-# #       - name: Run Ansible Playbook (Provisioning)
-# #         run: |
-# #           ansible-playbook main.yml \
-# #             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-# #             -e "number_of_sandboxes=3 base_rg_name=sandbox-rg" \
-# #             --diff | tee ansible-artifacts/provisioning-run.log
-
-# # # Upload atifacts for provisioning run
-# #       - name: Upload Ansible run artifacts
-# #         uses: actions/upload-artifact@v4
-# #         with:
-# #           name: ansible-run-results
-# #           path: ansible-artifacts/
-
-
-# ###############################################################################
-
-
-#       - name: Prepare Ansible artifact directory
-#         run: |
-#           mkdir -p ansible-artifacts/drift
-
-#       - name: Run Ansible Playbook in Drift Detection Mode
-#         id: drift
-#         shell: bash
-#         run: |
-#           set -o pipefail
-
-#           ansible-playbook main.yml \
-#             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-#             --check --diff \
-#             | tee ansible-artifacts/drift/drift-full.log || true
-
-#           # Detect drift
-#           if grep -E "changed=[1-9][0-9]*" ansible-artifacts/drift/drift-full.log; then
-#             echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
-#           else
-#             echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
-#           fi
-
-#           # Extract only changed tasks + diffs for quick review
-#           awk '
-#             /^TASK \[/ { task=$0 }
-#             /changed: \[|^diff:/ { print task; print; show=1 }
-#             show && /^[[:space:]]/ { print }
-#           ' ansible-artifacts/drift/drift-full.log \
-#             > ansible-artifacts/drift/drift-changes-only.log || true
-
-
-# #############################################################################
-#       - name: Debug resource group file
-#         run: |
-#           echo "=== File content ==="
-#           if [ -f /tmp/resource_group_names.txt ]; then
-#             cat /tmp/resource_group_names.txt
-#           else
-#             echo "File does not exist"
-#           fi
-#           echo "===================="
-
-
-
-
-#       - name: Set all resource groups as environment variables
-#         run: |
-#           i=1
-#           while IFS= read -r rg || [ -n "$rg" ]; do
-#             echo "RESOURCE_GROUP_$i=$rg" >> "$GITHUB_ENV"
-#             i=$((i+1))
-#           done < /tmp/resource_group_names.txt
-#         shell: bash
-
-
-#       - name: Display Resource Group Names
-#         run: |
-#           i=1
-#           while true; do
-#             VAR_NAME="RESOURCE_GROUP_$i"
-#             RG_VALUE="${!VAR_NAME}"
-#             if [ -z "$RG_VALUE" ]; then
-#               break
-#             fi
-#             echo "RG $i: $RG_VALUE"
-#             i=$((i + 1))
-#           done
-#         shell: bash
-
-
-
-#       - name: Upload drift detection artifacts
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: ansible-drift-detection
-#           path: ansible-artifacts/drift/
-
-          
-#       - name: Send Slack notification for sandbox creation
-#         run: |
-#           i=1
-#           while true; do
-#             VAR_NAME="RESOURCE_GROUP_$i"
-#             RG_VALUE="${!VAR_NAME}"
-
-#             [ -z "$RG_VALUE" ] && break
-
-#             if [ "$DRIFT_DETECTED" = "true" ]; then
-#               MESSAGE=" Drift detected while sandbox creation for Resource Group: ${RG_VALUE}. Please check the pipeline run."
-#             else
-#               MESSAGE=" Sandbox environment for Resource Group: ${RG_VALUE} is created. No drift detected."
-#             fi
-
-#             curl -X POST \
-#               -H "Content-type: application/json" \
-#               --data "{\"text\":\"${MESSAGE}\"}" \
-#               "$SLACK_WEBHOOK_URL"
-
-#             i=$((i + 1))
-#           done
-#         shell: bash
-
-
-
-
 name: Sandbox environment automation
 
 on:
@@ -217,11 +38,7 @@ jobs:
         run: |
           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
-      # - name: Run Ansible Playbook
-      #   run: |
-      #     ansible-playbook main.yml \
-      #       -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-      #       -e "number_of_sandboxes=3 base_rg_name=sandbox-rg"
+      
 
 # make directory for ansible pipeline artifacts
       - name: Prepare Ansible artifact directory
@@ -242,15 +59,12 @@ jobs:
           path: ansible-artifacts/
 
 
-
-
       - name: Debug resource group file
         run: |
           echo "=== File content ==="
           cat /tmp/resource_group_names.txt
           echo "===================="
         shell: bash
-
 
 
       - name: Set all resource groups as environment variables
@@ -290,6 +104,8 @@ jobs:
           else
             echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
           fi
+
+
       - name: Send Slack notification for sandbox creation
         run: |
           i=1
