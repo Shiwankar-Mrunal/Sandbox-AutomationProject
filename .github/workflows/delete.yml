@@ -3,14 +3,14 @@ name: Azure RG TTL Cleanup
 on:
   workflow_run:
     workflows:
-      - infrastrusture.yml   # MUST match infra workflow name exactly
+      - Sandbox environment automation   # ✅ EXACT MATCH
     types:
       - completed
 
   workflow_dispatch:
 
   schedule:
-    - cron: "*/5 * * * *"   # optional safety net
+    - cron: "*/5 * * * *"   # optional fallback
 
 jobs:
   delete_expired_rgs:
