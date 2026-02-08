@@ -3,7 +3,7 @@ name: Sandbox environment automation
 on:
   push: 
     branches: 
-            - test_version2
+            - variables
   pull_request:
     branches: 
       - main
