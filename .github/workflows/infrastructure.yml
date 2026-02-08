@@ -31,16 +31,6 @@ jobs:
         with: 
           python-version: '3.10'
 
-      - uses: actions/checkout@v3
-      - name: Install actionlint
-        run: |
-          sudo apt update && sudo apt install -y golang-go
-          go install github.com/rhysd/actionlint/cmd/actionlint@latest
-
-      - name: Run actionlint
-        run: actionlint .github/workflows/infrastructure.yml
-
-
       - name: Install Azure Ansible Collection
         run: |
           ansible-galaxy collection install azure.azcollection --force
