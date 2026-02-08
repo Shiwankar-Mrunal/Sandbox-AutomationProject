@@ -26,7 +26,7 @@
       azure.azcollection.azure_rm_publicipaddress:
         resource_group: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
-        name: "{{ Ip_name }}{{ item }}"
+        name: "{{ ip_name }}{{ item }}"
         allocation_method: Static
         sku: Standard
       loop: "{{ range(1, rg_count + 1) | list }}"
@@ -34,13 +34,13 @@
     - name: Create NICs
       azure.azcollection.azure_rm_networkinterface:
         resource_group: "{{ rg_base_name }}{{ item }}"
-        name: "{{ NIC_name }}{{ item }}"
+        name: "{{ nic_name }}{{ item }}"
         location: "{{ location }}"
         virtual_network: "{{ vnet_name }}"
         subnet: "{{ subnet }}"
         ip_configurations:
           - name: ipconfig1
-            public_ip_address_name: "{{ Ip_name }}{{ item }}"
+            public_ip_address_name: "{{ ip_name }}{{ item }}"
       loop: "{{ range(1, rg_count + 1) | list }}"
 
     - name: Create SSH key pair per environment
@@ -65,7 +65,7 @@
           - path: /home/{{ admin_username }}/.ssh/authorized_keys
             key_data: "{{ ssh_keys.results[item - 1].public_key }}"
         network_interface_names:
-          - "{{ NIC_name }}{{ item }}"
+          - "{{ nic_name }}{{ item }}"
         image:
           publisher: Canonical
           offer: 0001-com-ubuntu-server-jammy
