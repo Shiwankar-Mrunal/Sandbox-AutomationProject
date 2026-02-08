@@ -1,4 +1,3 @@
 #
 - name : Create Testing_environment
-  # import_tasks : vm_creation.yml
   ansible.builtin.import_tasks: vm_creation.yml
