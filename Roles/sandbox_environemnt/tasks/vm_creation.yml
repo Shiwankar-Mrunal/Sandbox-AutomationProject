@@ -1,12 +1,6 @@
 - name: Infrastructure vm_creation
   block:
 
-    # - name: Create Resource Group
-    #   azure.azcollection.azure_rm_resourcegroup:
-    #     name: "{{ item.Resource_group_name }}"
-    #     location: "{{ item.Location }}"
-    #   loop: "{{ environments }}"
-
     - name: Create resource groups
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ rg_base_name }}{{ item }}"

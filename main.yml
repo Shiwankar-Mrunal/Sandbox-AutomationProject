@@ -5,21 +5,5 @@
   gather_facts: yes
   vars:
     ansible_python_interpreter: /opt/hostedtoolcache/Python/3.10.19/x64/bin/python
-    # rg_count: 2
-    # rg_base_name: M-environment
-    # location: westeurope
-    # workspace_name: sandbox-test
-    # vnet_name: sandbox_vnet
-    # address_prefixes_vnet: ["10.0.0.0/16"]
-    # subnet: sandbox_subnet
-    # address_prefixes_subnet: ["10.0.1.0/24"]
-    # vm_name: Sandbox-vm
-    # vm_size: Standard_B1s
-    # admin_username: azureuser
-    # Ip_name: PublicIP-Sandbox
-    # NIC_name: NIC-sandbox
-    # ssh_public_key : ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK4+pewajD/at0FvNC8cZpMCPIOImVXHNRq4iv3bjW4L sandbox
-    # storage: sandboxstorage78
-    # nsg: nsg-sandbox
   roles:
     - sandbox_environemnt
