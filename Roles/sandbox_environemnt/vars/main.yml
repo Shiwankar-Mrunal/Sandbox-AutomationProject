@@ -16,5 +16,3 @@ nic_name: NIC-sandbox
 ssh_public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK4+pewajD/at0FvNC8cZpMCPIOImVXHNRq4iv3bjW4L sandbox
 storage: sandboxstorage78
 nsg: nsg-sandbox
-
-
