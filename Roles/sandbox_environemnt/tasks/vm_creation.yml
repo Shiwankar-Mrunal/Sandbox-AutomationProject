@@ -63,15 +63,15 @@
       azure.azcollection.azure_rm_virtualmachine:
         resource_group: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
-        name: "{{ item.vm_name }}"
-        vm_size: "{{ item.vm_size }}"
-        admin_username: "{{ item.admin_username }}"
+        name: "{{ vm_name }}{{ item }}"
+        vm_size: "{{ vm_size }}"
+        admin_username: "{{ admin_username }}"
         ssh_password_enabled: false
         ssh_public_keys:
-          - path: /home/{{ item.admin_username }}/.ssh/authorized_keys
+          - path: /home/{{ admin_username }}/.ssh/authorized_keys
             key_data: "{{ item.ssh_public_key }}"
         network_interface_names:
-          - "{{ item.NIC_name }}"
+          - "{{ NIC_name }}{{ item }}"
         image:
           publisher: Canonical
           offer: 0001-com-ubuntu-server-jammy
@@ -80,18 +80,18 @@
         vm_identity:
           type: SystemAssigned
         managed_disk_type: Standard_LRS
-      loop: "{{ environments }}"
+      loop: "{{ range(1, rg_count + 1) | list }}"
       loop_control:
-        label: "{{ item.Resource_group_name }} / {{ item.vm_name }}"
+        label: "{{ rg_base_name }}{{ item }} / {{ vm_name }}{{ item }}"
 
     - name: Create storage accounts
       azure_rm_storageaccount:
         resource_group: "{{ rg_base_name }}{{ item }}"
-        name: "{{ item.storage }}"
+        name: "{{ storage }}{{ item }}"
         type: Standard_LRS
       loop: "{{ range(1, rg_count + 1) | list }}"
       loop_control:
-        label: "{{ rg_base_name }}{{ item }} / {{ item.storage }}"
+        label: "{{ rg_base_name }}{{ item }} / {{ storage }}{{ item }}"
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
