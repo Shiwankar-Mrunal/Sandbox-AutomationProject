@@ -19,3 +19,4 @@ ssh_public_key: >
   at0FvNC8cZpMCPIOImVXHNRq4iv3bjW4L sandbox
 storage: sandboxstorage78
 nsg: nsg-sandbox
+
