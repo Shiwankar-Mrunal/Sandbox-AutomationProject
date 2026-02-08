@@ -34,15 +34,19 @@ jobs:
 
       - name: Install linters
         run: |
+          pip install --upgrade pip
           pip install ansible-lint yamllint
 
       - name: Lint YAML files
         run: |
+          echo "🔍 Running yamllint..."
           yamllint . || exit 1
 
       - name: Lint Ansible playbooks
         run: |
+          echo "🔍 Running ansible-lint..."
           ansible-lint main.yml || exit 1
+
 ###############################
 
       - name: Install Azure Ansible Collection
