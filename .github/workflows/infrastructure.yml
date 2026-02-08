@@ -39,6 +39,14 @@ jobs:
           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
+      - name: Install ansible-lint
+        run: |
+          pip install ansible-lint
+
+      - name: Lint Ansible Playbook
+        run: |
+          ansible-lint main.yml
+
 # make directory for ansible pipeline artifacts
       - name: Prepare Ansible artifact directory
         run: |
