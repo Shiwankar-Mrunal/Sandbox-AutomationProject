@@ -69,7 +69,7 @@
         ssh_password_enabled: false
         ssh_public_keys:
           - path: /home/{{ admin_username }}/.ssh/authorized_keys
-            key_data: "{{ item.ssh_public_key }}"
+            key_data: "{{ ssh_keys.results[item - 1].public_key }}"
         network_interface_names:
           - "{{ NIC_name }}{{ item }}"
         image:
