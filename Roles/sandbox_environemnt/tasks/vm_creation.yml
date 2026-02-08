@@ -15,14 +15,14 @@
 
     - name: Create virtual networks
       azure.azcollection.azure_rm_virtualnetwork:
-        resource_group: "{{ item.Resource_group_name }}"
+        resource_group: "{{ rg_base_name }}{{ item}}"
         name: "{{ item.vnet_name }}"
         address_prefixes: "{{ item.address_prefixes_vnet }}"
       loop: "{{ environments }}"
 
     - name: Add subnets
       azure.azcollection.azure_rm_subnet:
-        resource_group: "{{ item.Resource_group_name }}"
+        resource_group: "{{ rg_base_name }}{{ item }}"
         virtual_network: "{{ item.vnet_name }}"
         name: "{{ item.subnet }}"
         address_prefixes: "{{ item.address_prefixes_subnet }}"
@@ -30,7 +30,7 @@
 
     - name: Create public IPs
       azure.azcollection.azure_rm_publicipaddress:
-        resource_group: "{{ item.Resource_group_name }}"
+        resource_group: "{{ rg_base_name }}{{ item }}"
         location: "{{ item.Location }}"
         name: "{{ item.Ip_name }}"
         allocation_method: Static
@@ -39,7 +39,7 @@
 
     - name: Create NICs
       azure.azcollection.azure_rm_networkinterface:
-        resource_group: "{{ item.Resource_group_name }}"
+        resource_group: "{{ rg_base_name }}{{ item }}"
         name: "{{ item.NIC_name }}"
         location: "{{ item.Location }}"
         virtual_network: "{{ item.vnet_name }}"
@@ -51,18 +51,18 @@
 
     - name: Create SSH key pair per environment
       ansible.builtin.openssh_keypair:
-        path: "~/.ssh/azure_vm_key_{{ item.Resource_group_name }}"
+        path: "~/.ssh/azure_vm_key_{{ rg_base_name }}{{ item }}"
         type: rsa
         size: 4096
-      loop: "{{ environments }}"
+      loop: "{{ range(1, rg_count + 1) | list }}"
       loop_control:
-        label: "{{ item.Resource_group_name }}"
+        label: "{{ rg_base_name }}{{ item }}"
       register: ssh_keys
 
     - name: Create VMs
       azure.azcollection.azure_rm_virtualmachine:
-        resource_group: "{{ item.Resource_group_name }}"
-        location: "{{ item.Location }}"
+        resource_group: "{{ rg_base_name }}{{ item }}"
+        location: "{{ location }}"
         name: "{{ item.vm_name }}"
         vm_size: "{{ item.vm_size }}"
         admin_username: "{{ item.admin_username }}"
@@ -86,20 +86,20 @@
 
     - name: Create storage accounts
       azure_rm_storageaccount:
-        resource_group: "{{ item.Resource_group_name }}"
+        resource_group: "{{ rg_base_name }}{{ item }}"
         name: "{{ item.storage }}"
         type: Standard_LRS
-      loop: "{{ environments }}"
+      loop: "{{ range(1, rg_count + 1) | list }}"
       loop_control:
-        label: "{{ item.Resource_group_name }} / {{ item.storage }}"
+        label: "{{ rg_base_name }}{{ item }} / {{ item.storage }}"
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
-        name: "{{ item.Resource_group_name }}"
-      loop: "{{ environments }}"
+        name: "{{ rg_base_name }}{{ item }}"
+      loop: "{{ range(1, rg_count + 1) | list }}"
       register: rg_infos
       loop_control:
-        label: "{{ item.Resource_group_name }}"
+        label: "{{ rg_base_name }}{{ item }}"
       tags: fetch_rg
 
     - name: Set RG names variable
