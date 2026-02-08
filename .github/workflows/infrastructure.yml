@@ -38,7 +38,7 @@ jobs:
 
       - name: Lint YAML files
         run: |
-          yamllint -c .yamllint.yml . || exit 1
+          yamllint . || exit 1
 
       - name: Lint Ansible playbooks
         run: |
