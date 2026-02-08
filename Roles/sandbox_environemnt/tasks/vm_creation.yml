@@ -23,7 +23,7 @@
     - name: Add subnets
       azure.azcollection.azure_rm_subnet:
         resource_group: "{{ rg_base_name }}{{ item }}"
-        virtual_network: "{{ item.vnet_name }}"
+        virtual_network: "{{ vnet_name }}"
         name: "{{ subnet }}"
         address_prefixes: "{{ address_prefixes_subnet }}"
       loop: "{{ range(1, rg_count + 1) | list }}"
@@ -32,7 +32,7 @@
       azure.azcollection.azure_rm_publicipaddress:
         resource_group: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
-        name: "{{ item.Ip_name }}"
+        name: "{{ Ip_name }}{{ item }}"
         allocation_method: Static
         sku: Standard
       loop: "{{ range(1, rg_count + 1) | list }}"
@@ -40,13 +40,13 @@
     - name: Create NICs
       azure.azcollection.azure_rm_networkinterface:
         resource_group: "{{ rg_base_name }}{{ item }}"
-        name: "{{ item.NIC_name }}"
+        name: "{{ NIC_name }}{{ item }}"
         location: "{{ location }}"
         virtual_network: "{{ vnet_name }}"
         subnet: "{{ subnet }}"
         ip_configurations:
           - name: ipconfig1
-            public_ip_address_name: "{{ item.Ip_name }}"
+            public_ip_address_name: "{{ Ip_name }}{{ item }}"
       loop: "{{ range(1, rg_count + 1) | list }}"
 
     - name: Create SSH key pair per environment
