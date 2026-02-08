@@ -16,16 +16,16 @@
     - name: Create virtual networks
       azure.azcollection.azure_rm_virtualnetwork:
         resource_group: "{{ rg_base_name }}{{ item}}"
-        name: "{{ item.vnet_name }}"
-        address_prefixes: "{{ item.address_prefixes_vnet }}"
+        name: "{{ vnet_name }}"
+        address_prefixes: "{{ address_prefixes_vnet }}"
       loop: "{{ range(1, rg_count + 1) | list }}"
 
     - name: Add subnets
       azure.azcollection.azure_rm_subnet:
         resource_group: "{{ rg_base_name }}{{ item }}"
         virtual_network: "{{ item.vnet_name }}"
-        name: "{{ item.subnet }}"
-        address_prefixes: "{{ item.address_prefixes_subnet }}"
+        name: "{{ subnet }}"
+        address_prefixes: "{{ address_prefixes_subnet }}"
       loop: "{{ range(1, rg_count + 1) | list }}"
 
     - name: Create public IPs
@@ -42,8 +42,8 @@
         resource_group: "{{ rg_base_name }}{{ item }}"
         name: "{{ item.NIC_name }}"
         location: "{{ location }}"
-        virtual_network: "{{ item.vnet_name }}"
-        subnet: "{{ item.subnet }}"
+        virtual_network: "{{ vnet_name }}"
+        subnet: "{{ subnet }}"
         ip_configurations:
           - name: ipconfig1
             public_ip_address_name: "{{ item.Ip_name }}"
