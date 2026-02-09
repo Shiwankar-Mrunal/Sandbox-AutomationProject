@@ -7,13 +7,13 @@ on:
         description: 'Number of resource groups to create'
         required: true
         default: "4"
-        # type: choice
-        # options:
-        #   - "1"
-        #   - "2"
-        #   - "3"
-        #   - "4"
-        #   - "5"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
       rg_base_name:
         description: 'Base name for resource groups (e.g., sandbox-rg, dev-rg, test-rg)'
         required: true
