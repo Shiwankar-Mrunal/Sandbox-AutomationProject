@@ -2,7 +2,7 @@ name: Sandbox environment automation
 on:
   push:
     branches:
-      - variables
+      - demo_multiple_vm
   pull_request:
     branches:
       - main
