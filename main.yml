@@ -1,10 +1,12 @@
-
 - name: This is main file for Project "Sandbox_Environemnt"
   hosts: localhost
   connection: local
   become: true
-  gather_facts: yes
+  gather_facts: true
   vars:
     ansible_python_interpreter: /opt/hostedtoolcache/Python/3.10.19/x64/bin/python
+  vars_files:
+    - Roles/sandbox_environemnt/vars/main.yml
+
   roles:
     - sandbox_environemnt
