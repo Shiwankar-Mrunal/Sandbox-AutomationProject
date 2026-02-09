@@ -21,9 +21,9 @@ on:
         type: string
         
 
-  # push:
-  #   branches:
-  #     - demo_multiple_vm  
+  push:
+    branches:
+      - demo_multiple_vm  
 
   # pull_request:
   #   branches:
