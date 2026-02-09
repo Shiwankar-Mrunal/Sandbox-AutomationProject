@@ -124,3 +124,4 @@
     AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
     AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
     AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+    
