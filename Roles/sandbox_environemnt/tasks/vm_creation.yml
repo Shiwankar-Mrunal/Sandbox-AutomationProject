@@ -3,13 +3,13 @@
 
     - name: Set sandbox count
       set_fact:
-        sandbox_count: "{{ number_of_sandboxes | int }}"
+      sandbox_count: "{{ number_of_sandboxes | int }}"
 
     - name: Create resource groups
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ base_rg_name }}{{ item }}"
         location: "{{ location }}"
-      loop: "{{ range(1, sandbox_count + 1) | list }}"
+      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
 
     - name: Create virtual networks
       azure.azcollection.azure_rm_virtualnetwork:
@@ -99,19 +99,22 @@
     - name: Set RG names variable
       set_fact:
         my_rg_names: >-
-          {{
-            rg_infos.results
-            | map(attribute='resourcegroups')
-            | flatten
-            | map(attribute='name')
-            | list
-          }}
+        {{
+          rg_infos.results
+          | map(attribute='resourcegroups')
+          | flatten
+          | map(attribute='name')
+          | list
+        }}
       tags: fetch_rg
 
     - name: Write all RG names to file for pipeline
-      copy:
+      ansible.builtin.copy:
         content: "{{ my_rg_names | join('\n') }}"
         dest: /tmp/resource_group_names.txt
+        owner: root
+        group: root
+        mode: '0644'
       tags: fetch_rg
 
   environment:

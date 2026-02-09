@@ -1,4 +1,4 @@
-rg_base_name: M-environment
+base_rg_name: M-environment
 location: westeurope
 workspace_name: sandbox-test
 vnet_name: sandbox_vnet
