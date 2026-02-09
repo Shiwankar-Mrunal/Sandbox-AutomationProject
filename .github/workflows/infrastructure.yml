@@ -9,7 +9,7 @@ on:
 
   push:
     branches:
-      - variables
+      - multiple_vm_on_pipeline
   pull_request:
     branches:
       - main
