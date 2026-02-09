@@ -133,11 +133,19 @@ on:
       rg_count:
         description: 'Number of resource groups to create'
         required: true
-        default: 2
+        default: "2"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
       rg_base_name:
-        description: 'Base name for resource groups'
+        description: 'Base name for resource groups (e.g., sandbox-rg, dev-rg, test-rg)'
         required: true
-        default: M-environment
+        default: "M-environment"
+        type: string
 
   push:
     branches:
@@ -182,14 +190,57 @@ jobs:
       - name: Prepare Ansible artifact directory
         run: mkdir -p ansible-artifacts
 
+      - name: Set default values for inputs
+        run: |
+          if [ -z "${{ github.event.inputs.rg_count }}" ]; then
+            echo "RG_COUNT=2" >> $GITHUB_ENV
+          else
+            echo "RG_COUNT=${{ github.event.inputs.rg_count }}" >> $GITHUB_ENV
+          fi
+          
+          if [ -z "${{ github.event.inputs.rg_base_name }}" ]; then
+            echo "RG_BASE_NAME=M-environment" >> $GITHUB_ENV
+          else
+            echo "RG_BASE_NAME=${{ github.event.inputs.rg_base_name }}" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: Validate and Display Inputs
+        run: |
+          echo "========== WORKFLOW INPUTS =========="
+          echo "Resource Group Count: $RG_COUNT"
+          echo "Resource Group Base Name: $RG_BASE_NAME"
+          echo "======================================"
+          
+          # Validate rg_count is a number
+          if ! [[ "$RG_COUNT" =~ ^[0-9]+$ ]]; then
+            echo "❌ Error: RG_COUNT must be a number, got: $RG_COUNT"
+            exit 1
+          fi
+          
+          # Validate rg_count is between 1 and 10
+          if (( RG_COUNT < 1 || RG_COUNT > 10 )); then
+            echo "❌ Error: RG_COUNT must be between 1 and 10, got: $RG_COUNT"
+            exit 1
+          fi
+          
+          # Validate rg_base_name is not empty
+          if [ -z "$RG_BASE_NAME" ]; then
+            echo "❌ Error: RG_BASE_NAME cannot be empty"
+            exit 1
+          fi
+          
+          echo "✅ All inputs validated successfully"
+        shell: bash
+
       - name: Run Ansible Playbook (Provisioning)
         run: |
           ansible-playbook main.yml \
             -i localhost, \
             -c local \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            -e "rg_count=${{ github.event.inputs.rg_count }} rg_base_name=${{ github.event.inputs.rg_base_name }}" \
-            --diff | tee ansible-artifacts/provisioning-run.log
+            -e "rg_count=$RG_COUNT rg_base_name=$RG_BASE_NAME" \
+            --diff -vvv | tee ansible-artifacts/provisioning-run.log
         shell: bash
 
 
@@ -205,7 +256,8 @@ jobs:
             -i localhost, \
             -c local \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            -e "rg_count=${{ github.event.inputs.rg_count }} rg_base_name=${{ github.event.inputs.rg_base_name }}"
+            -e "rg_count=$RG_COUNT rg_base_name=$RG_BASE_NAME" \
+            --tags fetch_rg
           echo "=== File content ==="
           cat /tmp/resource_group_names.txt
           echo "===================="
@@ -242,7 +294,7 @@ jobs:
             -i localhost, \
             -c local \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            -e "rg_count=${{ github.event.inputs.rg_count }} rg_base_name=${{ github.event.inputs.rg_base_name }}" \
+            -e "rg_count=$RG_COUNT rg_base_name=$RG_BASE_NAME" \
             --check --diff > drift.log || true
           if grep -q 'changed=' drift.log; then
             echo "DRIFT_DETECTED=true" >> $GITHUB_ENV

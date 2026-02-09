@@ -1,3 +1,4 @@
 ---
 # defaults file for sandbox_environemnt
-#
+rg_count: 2
+rg_base_name: "M-sandbox-rg"
