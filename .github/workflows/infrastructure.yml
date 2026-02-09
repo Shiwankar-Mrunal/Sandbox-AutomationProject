@@ -85,20 +85,21 @@ jobs:
         run: |
           echo "Workflow event: $GITHUB_EVENT_NAME"
 
-          # Set RG_COUNT
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.rg_count }}" ]; then
-            echo "RG_COUNT=${{ github.event.inputs.rg_count }}" >> $GITHUB_ENV
+          # RG_COUNT
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RG_COUNT" ]; then
+            echo "RG_COUNT=$INPUT_RG_COUNT" >> $GITHUB_ENV
           else
             echo "RG_COUNT=2" >> $GITHUB_ENV
           fi
 
-          # Set RG_BASE_NAME
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.rg_base_name }}" ]; then
-            echo "RG_BASE_NAME=${{ github.event.inputs.rg_base_name }}" >> $GITHUB_ENV
+          # RG_BASE_NAME
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RG_BASE_NAME" ]; then
+            echo "RG_BASE_NAME=$INPUT_RG_BASE_NAME" >> $GITHUB_ENV
           else
             echo "RG_BASE_NAME=M-environment" >> $GITHUB_ENV
           fi
         shell: bash
+
 
 
       - name: Validate and Display Inputs
