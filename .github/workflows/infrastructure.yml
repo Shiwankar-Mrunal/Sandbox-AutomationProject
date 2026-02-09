@@ -76,7 +76,7 @@ jobs:
             echo "RESOURCE_GROUP_$i=$rg" >> "$GITHUB_ENV"
             i=$((i+1))
             done < /tmp/resource_group_names.txt
-          shell: bash
+        shell: bash
 
       - name: Display Resource Group Names
         run: |
