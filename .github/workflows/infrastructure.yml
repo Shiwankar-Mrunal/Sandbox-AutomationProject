@@ -40,6 +40,7 @@ jobs:
       - name: Install Azure Ansible Collection
         run: |
           ansible-galaxy collection install azure.azcollection --force
+          
       - name: Install Azure SDK dependencies for Ansible
         run: |
           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
