@@ -1,18 +1,23 @@
+---
 - name: Infrastructure vm_creation
+  # environment:
+  #   AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+  #   AZURE_SECRET_ID: "{{ lookup('env', 'AZURE_SECRET') }}"
+  #   AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+  #   AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
   block:
-
     - name: Create resource groups
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Create virtual networks
       azure.azcollection.azure_rm_virtualnetwork:
-        resource_group: "{{ rg_base_name }}{{ item}}"
+        resource_group: "{{ rg_base_name }}{{ item }}"
         name: "{{ vnet_name }}"
         address_prefixes: "{{ address_prefixes_vnet }}"
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Add subnets
       azure.azcollection.azure_rm_subnet:
@@ -20,7 +25,7 @@
         virtual_network: "{{ vnet_name }}"
         name: "{{ subnet }}"
         address_prefixes: "{{ address_prefixes_subnet }}"
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Create public IPs
       azure.azcollection.azure_rm_publicipaddress:
@@ -29,7 +34,7 @@
         name: "{{ ip_name }}{{ item }}"
         allocation_method: Static
         sku: Standard
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Create NICs
       azure.azcollection.azure_rm_networkinterface:
@@ -41,14 +46,14 @@
         ip_configurations:
           - name: ipconfig1
             public_ip_address_name: "{{ ip_name }}{{ item }}"
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Create SSH key pair per environment
-      ansible.builtin.openssh_keypair:
+      community.crypto.openssh_keypair:
         path: "~/.ssh/azure_vm_key_{{ rg_base_name }}{{ item }}"
         type: rsa
         size: 4096
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
       loop_control:
         label: "{{ rg_base_name }}{{ item }}"
       register: ssh_keys
@@ -74,30 +79,30 @@
         vm_identity:
           type: SystemAssigned
         managed_disk_type: Standard_LRS
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
       loop_control:
         label: "{{ rg_base_name }}{{ item }} / {{ vm_name }}{{ item }}"
 
     - name: Create storage accounts
-      azure_rm_storageaccount:
+      azure.azcollection.azure_rm_storageaccount:
         resource_group: "{{ rg_base_name }}{{ item }}"
         name: "{{ storage }}{{ item }}"
-        type: Standard_LRS
-      loop: "{{ range(1, rg_count + 1) | list }}"
+        account_type: Standard_LRS                     # updated key: account_type is the correct param
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
       loop_control:
         label: "{{ rg_base_name }}{{ item }} / {{ storage }}{{ item }}"
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
         name: "{{ rg_base_name }}{{ item }}"
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      loop: "{{ range(1, rg_count | int + 1) | list }}"
       register: rg_infos
       loop_control:
         label: "{{ rg_base_name }}{{ item }}"
       tags: fetch_rg
 
     - name: Set RG names variable
-      set_fact:
+      ansible.builtin.set_fact:
         my_rg_names: >-
           {{
             rg_infos.results
@@ -109,13 +114,14 @@
       tags: fetch_rg
 
     - name: Write all RG names to file for pipeline
-      copy:
+      ansible.builtin.copy:
         content: "{{ my_rg_names | join('\n') }}"
         dest: /tmp/resource_group_names.txt
+        mode: '0644'          # explicit permissions
       tags: fetch_rg
-
   environment:
     AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
     AZURE_SECRET: "{{ lookup('env', 'AZURE_SECRET') }}"
     AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
     AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+    
