@@ -1,11 +1,15 @@
 - name: Infrastructure vm_creation
   block:
 
+    - name: Set sandbox count
+      set_fact:
+        sandbox_count: "{{ number_of_sandboxes | int }}"
+
     - name: Create resource groups
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ base_rg_name }}{{ item }}"
         location: "{{ location }}"
-      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
+      loop: "{{ range(1, sandbox_count + 1) | list }}"
 
     - name: Create virtual networks
       azure.azcollection.azure_rm_virtualnetwork:
