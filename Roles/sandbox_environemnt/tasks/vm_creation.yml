@@ -5,7 +5,7 @@
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ base_rg_name }}{{ item }}"
         location: "{{ location }}"
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
 
     - name: Create virtual networks
       azure.azcollection.azure_rm_virtualnetwork:
