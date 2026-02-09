@@ -1,5 +1,12 @@
 name: Sandbox environment automation
 on:
+  workflow_dispatch:
+    inputs:
+      rg_count:
+        description: 'Number of sandboxes to create'
+        required: true
+        default: '3'
+
   push:
     branches:
       - variables
@@ -19,6 +26,7 @@ jobs:
       AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      RG_COUNT: ${{ inputs.rg_count }}
 
     steps:
       - name: Checkout code
@@ -49,7 +57,7 @@ jobs:
         run: |
             ansible-playbook main.yml \
               -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-              -e "number_of_sandboxes=3 base_rg_name=sandbox-rg" \
+              -e "number_of_sandboxes=${RG_COUNT} base_rg_name=${BASE_RG_NAME}" \
               --diff | tee ansible-artifacts/provisioning-run.log
 
 # Upload atifacts for provisioning run
