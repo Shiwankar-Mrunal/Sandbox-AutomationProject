@@ -1,10 +1,10 @@
 ---
 - name: Infrastructure vm_creation
-  environment:
-    AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
-    AZURE_SECRET_ID: "{{ lookup('env', 'AZURE_SECRET') }}"
-    AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-    AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+  # environment:
+  #   AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+  #   AZURE_SECRET_ID: "{{ lookup('env', 'AZURE_SECRET') }}"
+  #   AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+  #   AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
   block:
     - name: Create resource groups
       azure.azcollection.azure_rm_resourcegroup:
@@ -119,3 +119,8 @@
         dest: /tmp/resource_group_names.txt
         mode: '0644'          # explicit permissions
       tags: fetch_rg
+  environment:
+    AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
+    AZURE_SECRET_ID: "{{ lookup('env', 'AZURE_SECRET') }}"
+    AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
+    AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
