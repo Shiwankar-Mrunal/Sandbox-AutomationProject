@@ -1,33 +1,18 @@
-
-environments:
-  - Resource_group_name: M-Testing_environment
-    Location: westeurope
-    workspace_name: sandbox-test
-    vnet_name: sandbox_vnet
-    address_prefixes_vnet: ["10.0.0.0/16"]
-    subnet: sandbox_subnet
-    address_prefixes_subnet: ["10.0.1.0/24"]
-    vm_name: Sandbox-vm
-    vm_size: Standard_B1s
-    admin_username: azureuser
-    Ip_name: PublicIP-Sandbox
-    NIC_name: NIC-sandbox
-    ssh_public_key : ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK4+pewajD/at0FvNC8cZpMCPIOImVXHNRq4iv3bjW4L sandbox
-    storage: sandboxstorage78
-    nsg: nsg-sandbox
-
-  - Resource_group_name: M-Prod_environment
-    Location: northeurope
-    workspace_name: sandbox-prod
-    vnet_name: prod_vnet
-    address_prefixes_vnet: ["10.1.0.0/16"]
-    subnet: prod_subnet
-    address_prefixes_subnet: ["10.1.1.0/24"]
-    vm_name: Prod-vm
-    vm_size: Standard_B2s
-    admin_username: azureuser
-    Ip_name: PublicIP-Prod
-    NIC_name: NIC-prod
-    ssh_public_key : ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK4+pewajD/at0FvNC8cZpMCPIOImVXHNRq4iv3bjW4L sandbox
-    storage: prodstorage78
-    nsg: nsg-prod
+rg_count: 3
+rg_base_name: M-environment
+location: westeurope
+workspace_name: sandbox-test
+vnet_name: sandbox_vnet
+address_prefixes_vnet:
+  - "10.0.0.0/16"
+subnet: sandbox_subnet
+address_prefixes_subnet:
+  - "10.0.1.0/24"
+vm_name: sandbox-vm
+vm_size: Standard_B1s
+admin_username: azureuser
+ip_name: PublicIP-Sandbox
+nic_name: NIC-sandbox
+ssh_public_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK4+pewajD/at0FvNC8cZpMCPIOImVXHNRq4iv3bjW4L sandbox
+storage: sandboxstorage78
+nsg: nsg-sandbox

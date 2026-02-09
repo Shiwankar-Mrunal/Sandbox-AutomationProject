@@ -1,14 +1,12 @@
 name: Sandbox environment automation
-
 on:
-  push: 
-    branches: 
-            - test_version2
+  push:
+    branches:
+      - variables
   pull_request:
-    branches: 
+    branches:
       - main
     types: [opened, synchronize, reopened]
-    
 
 jobs:
   provision_sandbox:
@@ -22,13 +20,13 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-    steps: 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
-        with: 
+        with:
           python-version: '3.10'
 
       - name: Install Azure Ansible Collection
@@ -39,17 +37,21 @@ jobs:
           pip install azure-mgmt-monitor azure-mgmt-resource azure-identity
           pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
 
+
 # make directory for ansible pipeline artifacts
       - name: Prepare Ansible artifact directory
         run: |
           mkdir -p ansible-artifacts
+
 # Run Ansible Playbook for provisioning and save output to log file
+
       - name: Run Ansible Playbook (Provisioning)
         run: |
-          ansible-playbook main.yml \
-            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            -e "number_of_sandboxes=3 base_rg_name=sandbox-rg" \
-            --diff | tee ansible-artifacts/provisioning-run.log
+            ansible-playbook main.yml \
+              -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+              -e "number_of_sandboxes=3 base_rg_name=sandbox-rg" \
+              --diff | tee ansible-artifacts/provisioning-run.log
+
 # Upload atifacts for provisioning run
       - name: Upload Ansible run artifacts
         uses: actions/upload-artifact@v4
@@ -60,6 +62,8 @@ jobs:
 
       - name: Debug resource group file
         run: |
+          ansible-playbook main.yml \
+              -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" 
           echo "=== File content ==="
           cat /tmp/resource_group_names.txt
           echo "===================="
@@ -71,52 +75,52 @@ jobs:
           while IFS= read -r rg || [ -n "$rg" ]; do
             echo "RESOURCE_GROUP_$i=$rg" >> "$GITHUB_ENV"
             i=$((i+1))
-          done < /tmp/resource_group_names.txt
+            done < /tmp/resource_group_names.txt
         shell: bash
 
       - name: Display Resource Group Names
         run: |
-          i=1
-          while true; do
-            VAR_NAME="RESOURCE_GROUP_$i"
-            RG_VALUE="${!VAR_NAME}"
-            if [ -z "$RG_VALUE" ]; then
-              break
-            fi
-            echo "RG $i: $RG_VALUE"
-            i=$((i + 1))
-          done
+            i=1
+            while true; do
+              VAR_NAME="RESOURCE_GROUP_$i"
+              RG_VALUE="${!VAR_NAME}"
+              if [ -z "$RG_VALUE" ]; then
+                break
+              fi
+              echo "RG $i: $RG_VALUE"
+              i=$((i + 1))
+            done
         shell: bash
 
 
       - name: Run Ansible Playbook in Drift Detection Mode
         id: drift
         run: |
-          set -e
-          ansible-playbook main.yml \
-            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            --check --diff > drift.log || true
-          if grep -q 'changed=' drift.log; then
-            echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
-          else
-            echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
-          fi
+            set -e
+            ansible-playbook main.yml \
+              -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
+              --check --diff > drift.log || true
+            if grep -q 'changed=' drift.log; then
+              echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
+            else
+              echo "DRIFT_DETECTED=false" >> $GITHUB_ENV
+            fi
       - name: Send Slack notification for sandbox creation
         run: |
-          i=1
-          while true; do
-            VAR_NAME="RESOURCE_GROUP_$i"
-            RG_VALUE="${!VAR_NAME}"
-            [ -z "$RG_VALUE" ] && break
-            if [ "$DRIFT_DETECTED" = "true" ]; then
-              MESSAGE=" Drift detected while sandbox creation for Resource Group: ${RG_VALUE}. Please check the pipeline run."
-            else
-              MESSAGE=" Sandbox environment for Resource Group: ${RG_VALUE} is created. No drift detected."
-            fi
-            curl -X POST \
-              -H "Content-type: application/json" \
-              --data "{\"text\":\"${MESSAGE}\"}" \
-              "$SLACK_WEBHOOK_URL"
-            i=$((i + 1))
-          done
+            i=1
+            while true; do
+              VAR_NAME="RESOURCE_GROUP_$i"
+              RG_VALUE="${!VAR_NAME}"
+              [ -z "$RG_VALUE" ] && break
+              if [ "$DRIFT_DETECTED" = "true" ]; then
+                MESSAGE=" Drift detected while sandbox creation for Resource Group: ${RG_VALUE}. Please check the pipeline run."
+              else
+                MESSAGE=" Sandbox environment for Resource Group: ${RG_VALUE} is created. No drift detected."
+              fi
+              curl -X POST \
+                -H "Content-type: application/json" \
+                --data "{\"text\":\"${MESSAGE}\"}" \
+                "$SLACK_WEBHOOK_URL"
+              i=$((i + 1))
+            done
         shell: bash
