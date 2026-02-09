@@ -1,5 +1,5 @@
-rg_count: "{{ lookup('env','RG_COUNT') | int }}"
-rg_base_name: "{{ lookup('env','RG_BASE_NAME') }}"
+# rg_count: "{{ lookup('env','RG_COUNT') | int }}"
+# rg_base_name: "{{ lookup('env','RG_BASE_NAME') }}"
 location: westeurope
 workspace_name: sandbox-test
 vnet_name: sandbox_vnet
