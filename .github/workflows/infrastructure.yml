@@ -86,24 +86,24 @@ jobs:
       #     fi
       #   shell: bash
 
-      - name: Set default values for inputs dynamically
-        run: |
-          echo "Workflow event: $GITHUB_EVENT_NAME"
+      # - name: Set default values for inputs dynamically
+      #   run: |
+      #     echo "Workflow event: $GITHUB_EVENT_NAME"
 
-          # RG_COUNT
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RG_COUNT" ]; then
-            echo "RG_COUNT=$INPUT_RG_COUNT" >> $GITHUB_ENV
-          else
-            echo "RG_COUNT=2" >> $GITHUB_ENV
-          fi
+      #     # RG_COUNT
+      #     if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RG_COUNT" ]; then
+      #       echo "RG_COUNT=$INPUT_RG_COUNT" >> $GITHUB_ENV
+      #     else
+      #       echo "RG_COUNT=2" >> $GITHUB_ENV
+      #     fi
 
-          # RG_BASE_NAME
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RG_BASE_NAME" ]; then
-            echo "RG_BASE_NAME=$INPUT_RG_BASE_NAME" >> $GITHUB_ENV
-          else
-            echo "RG_BASE_NAME=M-environment" >> $GITHUB_ENV
-          fi
-        shell: bash
+      #     # RG_BASE_NAME
+      #     if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -n "$INPUT_RG_BASE_NAME" ]; then
+      #       echo "RG_BASE_NAME=$INPUT_RG_BASE_NAME" >> $GITHUB_ENV
+      #     else
+      #       echo "RG_BASE_NAME=M-environment" >> $GITHUB_ENV
+      #     fi
+      #   shell: bash
 
 
 
