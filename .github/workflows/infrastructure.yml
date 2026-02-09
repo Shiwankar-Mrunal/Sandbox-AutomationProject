@@ -45,7 +45,7 @@ jobs:
 
       - name: Lint Ansible Playbook
         run: |
-          ansible-lint infrastructure.yml
+          ansible-lint main.yml
 
 # make directory for ansible pipeline artifacts
       - name: Prepare Ansible artifact directory
