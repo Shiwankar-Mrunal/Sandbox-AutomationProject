@@ -19,7 +19,12 @@ on:
         required: true
         default: "M-environment"
         type: string
-        
+
+permissions:
+  contents: read
+  actions: read
+  packages: read
+  id-token: write        
 
   # push:
   #   branches:
