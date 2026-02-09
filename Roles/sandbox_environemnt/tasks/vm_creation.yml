@@ -5,14 +5,14 @@
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      
 
     - name: Create virtual networks
       azure.azcollection.azure_rm_virtualnetwork:
         resource_group: "{{ rg_base_name }}{{ item}}"
         name: "{{ vnet_name }}"
         address_prefixes: "{{ address_prefixes_vnet }}"
-      loop: "{{ range(1, rg_count + 1) | list }}"
+      
 
     - name: Add subnets
       azure.azcollection.azure_rm_subnet:
