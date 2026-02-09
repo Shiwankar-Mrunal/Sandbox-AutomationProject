@@ -19,14 +19,17 @@ on:
         required: true
         default: "M-environment"
         type: string
+        
 
-  push:
-    branches:
-      - demo_multiple_vm
-  pull_request:
-    branches:
-      - main
-    types: [opened, synchronize, reopened]
+  # push:
+  #   branches:
+  #     - demo_multiple_vm  
+
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types: [opened, synchronize, reopened]
+    
 
 jobs:
   provision_sandbox:
