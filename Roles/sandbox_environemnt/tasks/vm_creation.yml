@@ -3,7 +3,7 @@
 
     - name: Set sandbox count
       set_fact:
-        sandbox_count: "{{ number_of_sandboxes | int }}"
+        sandbox_count: "{{ number_of_sandboxes | default(1) | int }}"
 
     - name: Create resource groups
       azure.azcollection.azure_rm_resourcegroup:
