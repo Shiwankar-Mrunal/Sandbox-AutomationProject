@@ -12,7 +12,7 @@
         resource_group: "{{ base_rg_name }}{{ item }}"
         name: "{{ vnet_name }}"
         address_prefixes: "{{ address_prefixes_vnet }}"
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
 
     - name: Add subnets
       azure.azcollection.azure_rm_subnet:
@@ -20,7 +20,7 @@
         virtual_network: "{{ vnet_name }}"
         name: "{{ subnet }}"
         address_prefixes: "{{ address_prefixes_subnet }}"
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
 
     - name: Create public IPs
       azure.azcollection.azure_rm_publicipaddress:
@@ -29,7 +29,7 @@
         name: "{{ ip_name }}{{ item }}"
         allocation_method: Static
         sku: Standard
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
 
     - name: Create NICs
       azure.azcollection.azure_rm_networkinterface:
@@ -41,14 +41,14 @@
         ip_configurations:
           - name: ipconfig1
             public_ip_address_name: "{{ ip_name }}{{ item }}"
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
 
     - name: Create SSH key pair per environment
       ansible.builtin.openssh_keypair:
         path: "~/.ssh/azure_vm_key_{{ base_rg_name }}{{ item }}"
         type: rsa
         size: 4096
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
       loop_control:
         label: "{{ base_rg_name }}{{ item }}"
       register: ssh_keys
@@ -74,7 +74,7 @@
         vm_identity:
           type: SystemAssigned
         managed_disk_type: Standard_LRS
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
       loop_control:
         label: "{{ base_rg_name }}{{ item }} / {{ vm_name }}{{ item }}"
 
@@ -83,12 +83,12 @@
         resource_group: "{{ base_rg_name }}{{ item }}"
         name: "{{ storage }}{{ item }}"
         type: Standard_LRS
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
 
     - name: Fetch resource group info
       azure.azcollection.azure_rm_resourcegroup_info:
         name: "{{ base_rg_name }}{{ item }}"
-      loop: "{{ range(1, number_of_sandboxes + 1) | list }}"
+      loop: "{{ range(1, (number_of_sandboxes | int) + 1) | list }}"
       register: rg_infos
       tags: fetch_rg
 
