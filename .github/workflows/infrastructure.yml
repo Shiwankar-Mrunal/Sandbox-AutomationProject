@@ -188,7 +188,7 @@ jobs:
             -i localhost, \
             -c local \
             -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
-            -e "rg_count=$RG_COUNT rg_base_name=$RG_BASE_NAME" \
+            -e "rg_count=${{ github.event.inputs.rg_count }} rg_base_name=${{ github.event.inputs.rg_base_name }}" \
             --diff | tee ansible-artifacts/provisioning-run.log
         shell: bash
 
