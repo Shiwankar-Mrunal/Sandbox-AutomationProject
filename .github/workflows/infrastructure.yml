@@ -21,14 +21,14 @@ on:
         type: string
         
 
-  push:
-    branches:
-      - demo_multiple_vm  
+  # push:
+  #   branches:
+  #     - demo_multiple_vm  
 
-  pull_request:
-    branches:
-      - main
-    types: [opened, synchronize, reopened]
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types: [opened, synchronize, reopened]
     
 
 jobs:
