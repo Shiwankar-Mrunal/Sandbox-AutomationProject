@@ -6,7 +6,7 @@ on:
       rg_count:
         description: 'Number of resource groups to create'
         required: true
-        default: "4"
+        default: "1"
         type: choice
         options:
           - "1"
