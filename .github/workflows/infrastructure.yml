@@ -24,6 +24,10 @@ on:
         required: false
         default: "Environment=Sandbox,Owner=TeamA"
         type: string
+        
+  push:
+    branches:
+      - work_on_RG
 
 permissions:
   contents: read
@@ -31,9 +35,7 @@ permissions:
   packages: read
   id-token: write
   
-  push:
-    branches:
-      - work_on_RG
+  
 
   # pull_request:
   #   branches:
