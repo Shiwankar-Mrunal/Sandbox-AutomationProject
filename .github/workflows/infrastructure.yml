@@ -1,33 +1,36 @@
 name: Sandbox environment automation
 
 on:
-  workflow_dispatch:
-    inputs:
-      rg_count:
-        description: 'Number of resource groups to create'
-        required: true
-        default: "1"
-        type: choice
-        options:
-          - "1"
-          - "2"
-          - "3"
-          - "4"
-          - "5"
-      rg_base_name:
-        description: 'Base name for resource groups (e.g., sandbox-rg, dev-rg, test-rg)'
-        required: true
-        default: "M-environment"
-        type: string
-      rg_tags:
-        description: 'Comma-separated tags for resource groups (e.g., Environment=Sandbox,Owner=TeamA)'
-        required: false
-        default: "Environment=Sandbox,Owner=TeamA"
-        type: string
-
   push:
     branches:
       - work_on_RG
+    workflow_dispatch:
+      inputs:
+        rg_count:
+          description: 'Number of resource groups to create'
+          required: true
+          default: "1"
+          type: choice
+          options:
+            - "1"
+            - "2"
+            - "3"
+            - "4"
+            - "5"
+        rg_base_name:
+          description: 'Base name for resource groups (e.g., sandbox-rg, dev-rg, test-rg)'
+          required: true
+          default: "M-environment"
+          type: string
+        rg_tags:
+          description: 'Comma-separated tags for resource groups (e.g., Environment=Sandbox,Owner=TeamA)'
+          required: false
+          default: "Environment=Sandbox,Owner=TeamA"
+          type: string
+        
+  # push:
+  #   branches:
+  #     - work_on_RG
 
 permissions:
   contents: read
@@ -54,9 +57,9 @@ jobs:
       AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      RG_COUNT: ${{ github.event.inputs.rg_count || '1' }}
-      RG_BASE_NAME: ${{ github.event.inputs.rg_base_name || 'M-environment' }}
-      RG_TAGS_INPUT: ${{ github.event.inputs.rg_tags || 'Environment=Sandbox,Owner=TeamA' }}
+      RG_COUNT: ${{ github.event.inputs.rg_count }}
+      RG_BASE_NAME: ${{ github.event.inputs.rg_base_name }}
+      RG_TAGS_INPUT: ${{ github.event.inputs.rg_tags }}
 
     steps:
       - name: Checkout code
