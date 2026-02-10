@@ -31,9 +31,9 @@ permissions:
   packages: read
   id-token: write       
 
-  push:
-    branches:
-      - work_on_RG 
+    push:
+      branches:
+        - work_on_RG 
 
   # pull_request:
   #   branches:
