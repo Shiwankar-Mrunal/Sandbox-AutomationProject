@@ -4,29 +4,30 @@ on:
   push:
     branches:
       - work_on_RG
-    workflow_dispatch:
-      inputs:
-        rg_count:
-          description: 'Number of resource groups to create'
-          required: true
-          default: "1"
-          type: choice
-          options:
-            - "1"
-            - "2"
-            - "3"
-            - "4"
-            - "5"
-        rg_base_name:
-          description: 'Base name for resource groups (e.g., sandbox-rg, dev-rg, test-rg)'
-          required: true
-          default: "M-environment"
-          type: string
-        rg_tags:
-          description: 'Comma-separated tags for resource groups (e.g., Environment=Sandbox,Owner=TeamA)'
-          required: false
-          default: "Environment=Sandbox,Owner=TeamA"
-          type: string
+      
+  workflow_dispatch:
+    inputs:
+      rg_count:
+        description: 'Number of resource groups to create'
+        required: true
+        default: "1"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
+      rg_base_name:
+        description: 'Base name for resource groups (e.g., sandbox-rg, dev-rg, test-rg)'
+        required: true
+        default: "M-environment"
+        type: string
+      rg_tags:
+        description: 'Comma-separated tags for resource groups (e.g., Environment=Sandbox,Owner=TeamA)'
+        required: false
+        default: "Environment=Sandbox,Owner=TeamA"
+        type: string
         
   # push:
   #   branches:
