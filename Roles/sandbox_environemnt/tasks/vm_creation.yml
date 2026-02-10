@@ -10,6 +10,9 @@
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
+        tags:
+          Environment: Sandbox
+          create_date: "{{ ansible_date_time.date }}"
       loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Create virtual networks

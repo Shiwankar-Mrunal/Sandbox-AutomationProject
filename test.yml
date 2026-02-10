@@ -1,0 +1,9 @@
+- name: This is main file for Project "Sandbox_Environemnt"
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: debug Date
+      debug:
+        msg: "Current date is {{ ansible_date_time.date }}"
+
+
