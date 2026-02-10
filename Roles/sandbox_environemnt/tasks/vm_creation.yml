@@ -11,8 +11,10 @@
         name: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
         tags:
-          Environment: Sandbox
+          Environment: Mrunal's Sandbox
+          CreatedBy: GitHubActions  
           create_date: "{{ ansible_date_time.date }}"
+          create_time: "{{ ansible_date_time.time }}"
       loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Create virtual networks

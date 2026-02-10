@@ -52,6 +52,7 @@ jobs:
       RG_COUNT: ${{ github.event.inputs.rg_count || '1' }}
       RG_BASE_NAME: ${{ github.event.inputs.rg_base_name || 'M-environment' }}
       RG_TAGS: "Environment=Sandbox,CreatedBy=GitHubActions,CreationDate=$(date +%Y-%m-%d)"
+      RG_TAGS_DETAILED: "Environment=Sandbox,CreatedBy=GitHubActions,CreationDate=$(date +%Y-%m-%d),CreationTime=$(date +%H:%M:%S)"
 
     steps:
       - name: Checkout code
