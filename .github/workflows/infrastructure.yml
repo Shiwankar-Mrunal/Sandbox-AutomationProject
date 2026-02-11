@@ -20,9 +20,9 @@ on:
         default: "M-environment"
         type: string
 
-  push:
-    branches:
-      - work_on_RG
+  # push:
+  #   branches:
+  #     - work_on_RG
 
 permissions:
   contents: read
