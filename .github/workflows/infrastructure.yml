@@ -15,7 +15,7 @@ on:
           - "4"
           - "5"
       rg_base_name:
-        description: 'Base name for resource groups (e.g., sandbox-rg, dev-rg, test-rg)'
+        description: 'Base name for resource groups (e.g., sandbox-rg)'
         required: true
         default: "M-environment"
         type: string
@@ -28,15 +28,7 @@ permissions:
   contents: read
   actions: read
   packages: read
-  id-token: write        
-
-  
-
-  # pull_request:
-  #   branches:
-  #     - main
-  #   types: [opened, synchronize, reopened]
-    
+  id-token: write            
 
 jobs:
   provision_sandbox:

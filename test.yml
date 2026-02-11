@@ -5,5 +5,8 @@
     - name: debug Date
       debug:
         msg: "Current date is {{ ansible_date_time.date }}"
+    - name: debug Time
+      debug:    
+        msg: "Current time is {{ ansible_date_time.time }}"
 
 
