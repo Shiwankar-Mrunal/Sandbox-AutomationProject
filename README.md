@@ -1,6 +1,6 @@
 # Automated Sandbox Environment Provisioning & Monitoring
 
-## Overview
+## Overview :
 
 This project provides an automated solution for creating, deploying, monitoring, and maintaining **sandbox cloud environments** using **Infrastructure as Code (IaC)**, **CI/CD pipelines**, and **real-time monitoring**.  
 
@@ -10,7 +10,7 @@ The solution ensures that sandbox environments are:
 - Protected against configuration drift
 - Fully observable through dashboards and notifications
 
-## Problem Statement
+## Problem Statement : 
 
 ### Need for Isolated Environments:
 
@@ -18,29 +18,29 @@ The solution ensures that sandbox environments are:
 
 - Manual creation and maintenance of these environments is inefficient and prone to errors.
 
-### Automation Requirement:
+### Automation Requirement :
 
 - There is a need for an automated system to provision and manage these environments.
 
 - This system should use Infrastructure as Code (IaC) to ensure consistency and repeatability.
 
-### CI/CD Integration:
+### CI/CD Integration :
 
 - The automated system must integrate with CI/CD pipelines to deploy code and updates to the sandboxes seamlessly.
 
-### Monitoring and Health Checks:
+### Monitoring and Health Checks :
 
 - The system should actively monitor the health and configuration of these sandbox environments.
 
 - It should detect issues, failures, or deviations in real-time.
 
-### Configuration Drift Detection:
+### Configuration Drift Detection :
 
 - The system should identify configuration drift, i.e., differences between the intended and actual state of environments.
 
 - Automated alerts or corrective actions may be required to maintain environment integrity.
 
-### Visual Dashboard:
+### Visual Dashboard :
 
 - Provide a real-time visual dashboard to:
 
@@ -62,6 +62,7 @@ The solution ensures that sandbox environments are:
     - Environment Variables
 
 - Environments are reproducible, version-controlled, and auditable
+```n no of infra will create``` 
 
 ## Configure Playbook Variables:
 ### Set variables such as:
@@ -79,11 +80,8 @@ The solution ensures that sandbox environments are:
 - Pipelines are triggered by:
   - Code changes (push/PR)
   - Manual triggers
-  - Scheduled runs
 - Pipelines handle:
   - Infrastructure provisioning
-  - Updates and reconfiguration
-  - Validation and compliance checks
 
 ### 3. Slack Notifications
 - Real-time alerts sent to Slack for:
@@ -112,6 +110,3 @@ A centralized dashboard provides visibility into:
 - CI/CD pipeline execution status
 - Configuration drift status across sandbox environments
 - Overall environment health and compliance
-
-
-###
