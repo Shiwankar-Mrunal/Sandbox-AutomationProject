@@ -16,6 +16,10 @@ on:
         default: "M-environment"
         type: string
 
+  push:
+    branches: 
+      - test_version2
+
 permissions:
   contents: read
   actions: read
