@@ -18,7 +18,7 @@ on:
 
   push:
     branches: 
-      - test_version2
+      - main
 
 permissions:
   contents: read
