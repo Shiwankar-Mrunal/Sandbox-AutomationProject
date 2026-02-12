@@ -1,15 +1,15 @@
 ---
 - name: Infrastructure vm_creation
-  # environment:
-  #   AZURE_CLIENT_ID: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
-  #   AZURE_SECRET_ID: "{{ lookup('env', 'AZURE_SECRET') }}"
-  #   AZURE_TENANT: "{{ lookup('env', 'AZURE_TENANT') }}"
-  #   AZURE_SUBSCRIPTION_ID: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
   block:
     - name: Create resource groups
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ rg_base_name }}{{ item }}"
         location: "{{ location }}"
+        tags:
+          Environment: "Mrunal's Sandbox"
+          CreatedBy: GitHubActions
+          create_date: "{{ ansible_date_time.date }}"
+          create_time: "{{ ansible_date_time.time }}"
       loop: "{{ range(1, rg_count | int + 1) | list }}"
 
     - name: Create virtual networks
