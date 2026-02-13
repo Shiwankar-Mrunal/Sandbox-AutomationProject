@@ -6,7 +6,7 @@ on:
       rg_count:
         description: 'Number of resource groups to create'
         required: true
-        default: "4"
+        default: "1"
         type: choice
         options: ["1","2","3","4","5","6","7","8","9","10"]
 
@@ -144,9 +144,6 @@ jobs:
         run: |
           set -e
           ansible-playbook main.yml \
-            -i localhost, \
-            -c local \
-            -e "ansible_python_interpreter=/opt/hostedtoolcache/Python/3.10.19/x64/bin/python" \
             -e "rg_count=$RG_COUNT rg_base_name=$RG_BASE_NAME" \
             --check --diff > drift.log || true
           if grep -q 'changed=' drift.log; then
