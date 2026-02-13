@@ -157,11 +157,11 @@ This helps to reduce :
 
 ### Testing On basis of Time
 
-|Sr. No.  | No. Of Environemnet | Total Time |     Maximum TimeTaken Task          | Time Taken | SecondMaximum TimeTaken Task | Time Taken |
+|Sr. No.  | No. Of Environment | Total Time |     Maximum TimeTaken Task          | Time Taken | SecondMaximum TimeTaken Task | Time Taken |
 |  ---    |         ---         |   ---      |          ---                        |     ---    |              ---             |      ---   |
 |         |                     |            |                                     |            |                              |            |
 |  1.     |      5              |   14m20s   | Run Ansible playbook (Provisioning) |   9m14s    |      Drift Detection Mode    |   3ms      |
-| ex.     | 5(alredy creted)+1  |   11m14s   |                                     |   5m26s    |                              |   3m48s    |
+| ex.     | 5(already created)+1  |   11m14s   |                                     |   5m26s    |                              |   3m48s    |
 |         |                     |            |                                     |            |                              |            |
 |   2.    |       7             |   18m44s   | Run Ansible playbook (Provisioning) |   12m23s   |      Drift Detection Mode    |   4m14s    |
 |         |                     |            |                                     |            |                              |            |
@@ -171,6 +171,6 @@ This helps to reduce :
 # Conclusion : 
 
 - Able to create 'n' no. of environment
-- 'n' no of environemnt will be notify on slack.
+- 'n' no of environment will be notify on slack.
 - Having Powershell Script which run daily to check resources for deletion.
 -  If Resources are already created and one resource gruop newly attached to create  ```Run Ansible playbook (Provisioning)``` take less time compare to previous task becuuse ansible feature ```BUT``` ```Drift Detection Mode``` task take more time compare to previous task
