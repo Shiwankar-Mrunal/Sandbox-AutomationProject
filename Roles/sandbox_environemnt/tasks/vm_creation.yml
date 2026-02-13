@@ -87,7 +87,7 @@
       azure.azcollection.azure_rm_storageaccount:
         resource_group: "{{ rg_base_name }}{{ item }}"
         name: "{{ storage }}{{ item }}"
-        account_type: Standard_LRS                     # updated key: account_type is the correct param
+        account_type: Standard_LRS  # updated key: account_type is the correct param
       loop: "{{ range(1, rg_count | int + 1) | list }}"
       loop_control:
         label: "{{ rg_base_name }}{{ item }} / {{ storage }}{{ item }}"
